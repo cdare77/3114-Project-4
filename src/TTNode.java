@@ -14,20 +14,15 @@ import java.util.List;
  * @version 11/18/2017
  * @param <Key>
  *            -- generic reference for comparable
- * @param <Value>
- *            -- generic for data stored
  */
-public class TTNode<Key extends Comparable<? super Key>,
-        Value extends Comparable<? super Value>> {
+public class TTNode<Key extends Comparable<? super Key>> {
 
     // -------------------PRIVATE VARIABLES------------------
-    private Value lval; // The left record
     private Key lkey; // The node's left key
-    private Value rval; // The right record
     private Key rkey; // The node's right key
-    private TTNode<Key, Value> left; // Pointer to left child
-    private TTNode<Key, Value> center; // Pointer to middle child
-    private TTNode<Key, Value> right; // Pointer to right child
+    private TTNode<Key> left; // Pointer to left child
+    private TTNode<Key> center; // Pointer to middle child
+    private TTNode<Key> right; // Pointer to right child
 
     // -------------------CONSTRUCTOR------------------
 
@@ -44,12 +39,8 @@ public class TTNode<Key extends Comparable<? super Key>,
      * 
      * @param lk
      *            -- left key
-     * @param lv
-     *            -- left value
      * @param rk
      *            -- right key
-     * @param rv
-     *            -- right value
      * @param p1
      *            -- left child pointer
      * @param p2
@@ -57,13 +48,11 @@ public class TTNode<Key extends Comparable<? super Key>,
      * @param p3
      *            -- right child pointer
      */
-    public TTNode(Key lk, Value lv, Key rk, Value rv,
-            TTNode<Key, Value> p1, TTNode<Key, Value> p2,
-            TTNode<Key, Value> p3) {
+    public TTNode(Key lk, Key rk, TTNode<Key> p1,
+            TTNode<Key> p2, TTNode<Key> p3) {
+
         lkey = lk;
         rkey = rk;
-        lval = lv;
-        rval = rv;
         left = p1;
         center = p2;
         right = p3;
@@ -85,7 +74,7 @@ public class TTNode<Key extends Comparable<? super Key>,
      * 
      * @return reference to left child
      */
-    public TTNode<Key, Value> leftChild() {
+    public TTNode<Key> leftChild() {
         return left;
     }
 
@@ -94,7 +83,7 @@ public class TTNode<Key extends Comparable<? super Key>,
      * 
      * @return reference to right child
      */
-    public TTNode<Key, Value> rightChild() {
+    public TTNode<Key> rightChild() {
         return right;
     }
 
@@ -103,7 +92,7 @@ public class TTNode<Key extends Comparable<? super Key>,
      * 
      * @return reference to center child
      */
-    public TTNode<Key, Value> centerChild() {
+    public TTNode<Key> centerChild() {
         return center;
     }
 
@@ -117,15 +106,6 @@ public class TTNode<Key extends Comparable<? super Key>,
     } // Left key
 
     /**
-     * Accessor method fro left value
-     * 
-     * @return reference for left value
-     */
-    public Value lval() {
-        return lval;
-    } // Left value
-
-    /**
      * Accessor method for right key
      * 
      * @return reference for right key
@@ -135,25 +115,13 @@ public class TTNode<Key extends Comparable<? super Key>,
     } // Right key
 
     /**
-     * Accessor method for right value
-     * 
-     * @return reference to right value
-     */
-    public Value rval() {
-        return rval;
-    } // Right value
-
-    /**
      * Modifier method for left KV-pair
      * 
      * @param k
      *            -- new left key
-     * @param val
-     *            -- new left value
      */
-    public void setLeft(Key k, Value val) {
+    public void setLeftKey(Key k) {
         lkey = k;
-        lval = val;
     }
 
     /**
@@ -161,12 +129,9 @@ public class TTNode<Key extends Comparable<? super Key>,
      * 
      * @param k
      *            -- new right key
-     * @param val
-     *            -- new right value
      */
-    public void setRight(Key k, Value val) {
+    public void setRightKey(Key k) {
         rkey = k;
-        rval = val;
     }
 
     /**
@@ -175,7 +140,7 @@ public class TTNode<Key extends Comparable<? super Key>,
      * @param it
      *            -- new left child
      */
-    public void setLeftChild(TTNode<Key, Value> it) {
+    public void setLeftChild(TTNode<Key> it) {
         left = it;
     }
 
@@ -185,7 +150,7 @@ public class TTNode<Key extends Comparable<? super Key>,
      * @param it
      *            -- new center child
      */
-    public void setCenterChild(TTNode<Key, Value> it) {
+    public void setCenterChild(TTNode<Key> it) {
         center = it;
     }
 
@@ -195,7 +160,7 @@ public class TTNode<Key extends Comparable<? super Key>,
      * @param it
      *            -- new right child
      */
-    public void setRightChild(TTNode<Key, Value> it) {
+    public void setRightChild(TTNode<Key> it) {
         right = it;
     }
 
@@ -207,33 +172,30 @@ public class TTNode<Key extends Comparable<? super Key>,
      *            -- root of specified subtree
      * @param k
      *            -- key to insert
-     * @param val
-     *            -- value to insert
-     * @return
+     * @return reference to node after key is inserted into
+     *         subtree
      */
-    public TTNode<Key, Value> insertHelp(Key k, Value val) {
+    public TTNode<Key> insertHelp(Key k) {
 
-        TTNode<Key, Value> retval;
+        TTNode<Key> retval;
 
         if (this.isLeaf()) { // At leaf node: insert here
-            return this.add(new TTNode<Key, Value>(k, val,
-                    null, null, null, null, null));
+            return this.add(new TTNode<Key>(k,
+                    null, null, null, null));
         }
         // Add to internal node
-        if (compareKVPair(k, val, lkey, lval) <= 0) { // Insert
-                                                      // left
+        if (k.compareTo(lkey) <= 0) { // Insert left
 
-            retval = left.insertHelp(k, val);
+            retval = left.insertHelp(k);
 
             if (retval == left)
                 return this;
             else
                 return this.add(retval);
         }
-        else if (right == null
-                || compareKVPair(k, val, rkey, rval) <= 0) {
+        else if (right == null || k.compareTo(rkey) <= 0) {
 
-            retval = center.insertHelp(k, val);
+            retval = center.insertHelp(k);
 
             if (retval == center)
                 return this;
@@ -241,7 +203,7 @@ public class TTNode<Key extends Comparable<? super Key>,
                 return this.add(retval);
         }
         else { // Insert right
-            retval = right.insertHelp(k, val);
+            retval = right.insertHelp(k);
             if (retval == right)
                 return this;
             else
@@ -259,70 +221,62 @@ public class TTNode<Key extends Comparable<? super Key>,
      * 
      * @param k
      *            -- key to remove
-     * @return -- value of KV pair removed
+     * @return -- reference to KV pair removed
      */
-    public Value removeHelper(Key k) {
+    public Key removeHelper(Key k) {
 
         // value to return
-        Value toRet = null;
+        Key toRet = null;
 
-        if (lkey.compareTo(k) == 0) {
+        if (k.compareTo(lkey) == 0) {
             // current node has desired key in the left
-            toRet = lval;
+            toRet = lkey;
 
             if (this.isLeaf()) {
                 // key to remove is in leaf.. merely rotate
-                // elements
-                // downwards
-                this.setLeft(rkey, rval);
-                this.setRight(null, null);
+                // elements downwards
+                this.setLeftKey(rkey);
+                this.setRightKey(null);
             }
             else {
                 // find the next greatest leaf in the tree
                 // and swap in order to move problem to
                 // leaf
-                TTNode<Key, Value> successor = this.center;
+                TTNode<Key> successor = this.center;
                 while (!successor.isLeaf()) {
                     successor = successor.leftChild();
                 }
 
                 // swap key-value pair in current node
                 // and successor
-                Key tempKey = lkey;
-
                 lkey = successor.lkey();
-                lval = successor.lval();
-
-                successor.setLeft(tempKey, toRet);
+                successor.setLeftKey(toRet);
                 toRet = this.center.removeHelper(k);
             }
         }
-        else if (rkey != null && rkey.compareTo(k) == 0) {
+        else if (rkey != null
+                && k.compareTo(rkey) == 0) {
             // current node has desired key in right
-            toRet = rval;
+            toRet = rkey;
 
             if (this.isLeaf()) {
                 // key to remove is in right node of leaf..
                 // simply remove
-                this.setRight(null, null);
+                this.setRightKey(null);
             }
             else {
                 // find the next greatest leaf in the tree
                 // and swap in order to move problem to
                 // leaf
-                TTNode<Key, Value> successor = this.right;
+                TTNode<Key> successor = this.right;
                 while (!successor.isLeaf()) {
                     successor = successor.leftChild();
                 }
 
                 // swap key-value pair in current node
                 // and successor
-                Key tempKey = lkey;
-
-                lkey = successor.lkey();
-                lval = successor.lval();
-
-                successor.setLeft(tempKey, toRet);
+                rkey = successor.lkey();
+                successor.setLeftKey(toRet);
                 toRet = this.right.removeHelper(k);
             }
         }
@@ -374,19 +328,31 @@ public class TTNode<Key extends Comparable<? super Key>,
         }
     } // end height()
 
+    /**
+     * Private recursive helper method which traverses the tree
+     * and returns all keys within the range of lower and higher
+     * (inclusive)
+     * 
+     * @param lower
+     *            -- lower bound of range
+     * @param higher
+     *            -- upper bound of range
+     * @param list
+     *            -- list of elements that fall within range
+     */
     public void rangeSearchHelper(Key lower, Key higher,
-            List<Value> list) {
+            List<Key> list) {
         if (this.isLeaf()) {
             // we cant recursively traverse the tree any
             // more, so we simply check if we can add the
             // values stored in the node
             if (lower.compareTo(lkey) <= 0
                     && higher.compareTo(lkey) >= 0) {
-                list.add(lval);
+                list.add(lkey);
             }
             if (rkey != null && lower.compareTo(rkey) <= 0
                     && higher.compareTo(rkey) >= 0) {
-                list.add(rval);
+                list.add(rkey);
             }
         }
         else if (lower.compareTo(lkey) <= 0) {
@@ -396,16 +362,16 @@ public class TTNode<Key extends Comparable<? super Key>,
             if (higher.compareTo(lkey) >= 0) {
                 // lkey falls in range [lower, higher]
                 // (inclusive)
-                list.add(lval);
+                list.add(lkey);
                 center.rangeSearchHelper(lower, higher, list);
                 if (rkey != null
                         && higher.compareTo(rkey) >= 0) {
                     // [lkey, rkey] is contained in [lower,
                     // higher]
-                    list.add(rval);
+                    list.add(rkey);
                     right.rangeSearchHelper(lower, higher, list);
                 }
-            } // end outer if
+            } // end outer nested if
         } // end else if
         else if (rkey == null || lower.compareTo(rkey) <= 0) {
             // lower bound (lower) is strictly greater than lkey
@@ -415,7 +381,7 @@ public class TTNode<Key extends Comparable<? super Key>,
             if (rkey != null
                     && higher.compareTo(rkey) >= 0) {
                 // rkey falls within range
-                list.add(rval);
+                list.add(rkey);
                 right.rangeSearchHelper(lower, higher, list);
             }
         } // end else if
@@ -464,34 +430,29 @@ public class TTNode<Key extends Comparable<? super Key>,
      * @return reference to new root with node in subtree.
      *         Subtree is no deeper than 3 nodes
      */
-    private TTNode<Key, Value> add(TTNode<Key, Value> node) {
+    private TTNode<Key> add(TTNode<Key> node) {
         if (rkey == null) { // Only one key, add here
-            if (compareKVPair(lkey, lval, node.lkey(),
-                    node.lval()) < 0) {
+            if (lkey.compareTo(node.lkey()) < 0) {
                 rkey = node.lkey();
-                rval = node.lval();
                 center = node.leftChild();
                 right = node.centerChild();
             }
             else {
                 rkey = lkey;
-                rval = lval;
                 right = center;
                 lkey = node.lkey();
-                lval = node.lval();
                 center = node.centerChild();
             }
             return this;
         } // end else
           // node to add's left key is smaller
-        else if (compareKVPair(lkey, lval, node.lkey(),
-                node.lval()) >= 0) {
+        else if (lkey.compareTo(node.lkey) >= 0) {
 
             // create new node with node to add as left child and
             // this node as center child
-            TTNode<Key, Value> newParent =
-                    new TTNode<Key, Value>(lkey,
-                            lval, null, null, node, this, null);
+            TTNode<Key> newParent =
+                    new TTNode<Key>(lkey, null, node, this,
+                            null);
 
             // rotate pointers leftwards
             // node.setLeftChild(left);
@@ -501,38 +462,39 @@ public class TTNode<Key extends Comparable<? super Key>,
 
             // rotate key-value pair left
             lkey = rkey;
-            lval = rval;
             rkey = null;
-            rval = null;
 
             // return new parent
             return newParent;
         }
-        else if (compareKVPair(rkey, rval, node.lkey(),
-                node.lval()) >= 0) { // Add
-            // center
+        else if (rkey.compareTo(node.lkey()) >= 0) {
+            // Add center
             node.setCenterChild(
-                    new TTNode<Key, Value>(rkey, rval,
-                            null, null, node.centerChild(),
-                            right, null));
+                    new TTNode<Key>(rkey, null,
+                            node.centerChild(), right, null));
             node.setLeftChild(this);
             rkey = null;
-            rval = null;
             right = null;
             return node;
         }
         else { // Add right
-            TTNode<Key, Value> newParent =
-                    new TTNode<Key, Value>(rkey,
-                            rval, null, null, this, node, null);
+            TTNode<Key> newParent =
+                    new TTNode<Key>(rkey, null, this, node,
+                            null);
             node.setLeftChild(right);
             right = null;
             rkey = null;
-            rval = null;
             return newParent;
         }
     } // end add
 
+    /**
+     * Private helper method which allows us to rebalance the
+     * tree based on the circumstances of the children's data
+     * distribution. Whenever a node has null KV pairs in both
+     * the left and right, we consider it as an imbalance since
+     * its parent could simply point to null.
+     */
     private void rebalanceChildren() {
 
         // First case is that the empty node has a sibling with
@@ -562,14 +524,14 @@ public class TTNode<Key extends Comparable<? super Key>,
         // The last case is that the empty node has only one
         // singleton sibling. We merge the sibling and the parent
         // and push the empty node up one level to either be
-        // solved
-        // recursively or eventually find its way into the root.
+        // solved recursively or eventually find its way into the
+        // root.
         boolean leftSingletonOnly = left != null
-                && center != null && left.lval() != null
-                && center.lval() == null;
+                && center != null && left.lkey() != null
+                && center.lkey() == null;
         boolean centerSingletonOnly = left != null
-                && center != null && left.lval() == null
-                && center.lval() != null;
+                && center != null && left.lkey() == null
+                && center.lkey() != null;
 
         // Sift down cases. Case 1 takes first priority with
         // case 3 as last priority since it does not actually
@@ -675,22 +637,22 @@ public class TTNode<Key extends Comparable<? super Key>,
         // indicates situation where unbalanced child is in
         // center
         boolean middleUnbalanced = left != null && center != null
-                && right != null && right.lval() != null
-                && left.lval() != null && center.lval() == null;
+                && right != null && right.lkey() != null
+                && left.lkey() != null && center.lkey() == null;
         // indicates situation where unbalanced child is in right
         boolean rightUnbalanced = left != null && center != null
-                && right != null && left.lval() != null
-                && center.lval() != null && right.lval() == null;
+                && right != null && left.lkey() != null
+                && center.lkey() != null && right.lkey() == null;
         // indicates situation where unbalanced child is in left
         boolean leftUnbalanced = left != null && right != null
-                && center != null && center.lval() != null
-                && right.lval() != null && left.lval() == null;
+                && center != null && center.lkey() != null
+                && right.lkey() != null && left.lkey() == null;
 
         if (middleUnbalanced) {
             // update key-value pairs
-            left.setRight(lkey, lval);
-            this.setLeft(rkey, rval);
-            this.setRight(null, null);
+            left.setRightKey(lkey);
+            this.setLeftKey(rkey);
+            this.setRightKey(null);
 
             // update children
             left.setRightChild(center.leftChild());
@@ -721,24 +683,25 @@ public class TTNode<Key extends Comparable<? super Key>,
         // indicates situation in which the center child is
         // unbalanced
         boolean centerUnbalanced = left != null && center != null
-                && left.lval() != null && center.lval() == null;
+                && left.lkey() != null && center.lkey() == null;
         // indicates situation in which the left child is
         // unbalanced
         boolean leftUnbalanced = left != null && center != null
-                && left.lval() == null && center.lval() != null;
+                && left.lkey() == null && center.lkey() != null;
 
         if (centerUnbalanced) {
-            left.setRight(lkey, lval);
-            this.setLeft(null, null);
+            left.setRightKey(lkey);
+            this.setLeftKey(null);
 
             left.setRightChild(center.leftChild());
             this.setCenterChild(null);
         }
         else if (leftUnbalanced) {
-            center.setRight(center.lkey(), center.lval());
-            center.setLeft(lkey, lval);
-            this.setLeft(null, null);
+            center.setRightKey(center.lkey());
+            center.setLeftKey(lkey);
+            this.setLeftKey(null);
 
+            // update pointers
             center.setRightChild(center.centerChild());
             center.setCenterChild(center.leftChild());
             center.setLeftChild(left.leftChild());
@@ -782,10 +745,10 @@ public class TTNode<Key extends Comparable<? super Key>,
             // rotate values from center child into left child
 
             // update key-value pairs
-            left.setLeft(lkey, lval);
-            this.setLeft(center.lkey(), center.lval());
-            center.setLeft(center.rkey(), center.rval());
-            center.setRight(null, null);
+            left.setLeftKey(lkey);
+            this.setLeftKey(center.lkey());
+            center.setLeftKey(center.rkey());
+            center.setRightKey(null);
 
             // update children references
             left.setCenterChild(center.leftChild());
@@ -797,10 +760,10 @@ public class TTNode<Key extends Comparable<? super Key>,
             // rotate values from right child into center child
 
             // update key-value pairs
-            center.setLeft(rkey, rval);
-            this.setRight(right.lkey(), right.lval());
-            right.setLeft(right.rkey(), right.rval());
-            right.setRight(null, null);
+            center.setLeftKey(rkey);
+            this.setRightKey(right.lkey());
+            right.setLeftKey(right.rkey());
+            right.setRightKey(null);
 
             // update children references
             center.setCenterChild(right.leftChild());
@@ -841,13 +804,13 @@ public class TTNode<Key extends Comparable<? super Key>,
 
         if (aboutCenter) {
 
-            right.setLeft(rkey, rval);
+            right.setLeftKey(rkey);
 
             // now must take into account size of center child
             if (center.rkey != null) {
                 // center child has 2 keys
-                this.setRight(center.rkey(), center.rval());
-                center.setRight(null, null);
+                this.setRightKey(center.rkey());
+                center.setRightKey(null);
 
                 right.setCenterChild(right.leftChild());
                 right.setLeftChild(center.rightChild());
@@ -855,8 +818,8 @@ public class TTNode<Key extends Comparable<? super Key>,
             }
             else {
                 // center child only has 1 key
-                this.setRight(center.lkey(), center.lval());
-                center.setLeft(null, null);
+                this.setRightKey(center.lkey());
+                center.setLeftKey(null);
 
                 right.setCenterChild(right.leftChild());
                 right.setLeftChild(center.centerChild());
@@ -865,9 +828,9 @@ public class TTNode<Key extends Comparable<? super Key>,
         }
         else {
             // update key-value pairs
-            center.setLeft(this.lkey(), this.lval());
-            this.setLeft(left.rkey(), left.rval());
-            left.setRight(null, null);
+            center.setLeftKey(this.lkey());
+            this.setLeftKey(left.rkey());
+            left.setRightKey(null);
 
             // update children references
             center.setCenterChild(center.leftChild());
@@ -876,6 +839,22 @@ public class TTNode<Key extends Comparable<? super Key>,
         } // end else
     } // end rotateClockwise
 
+    /**
+     * Private helper method for our printDepthFirst method. This
+     * method recursively lets us print all nodes at the same
+     * exact height. If h is the height of the tree, then
+     * 
+     * 1 <= level <= height
+     * 
+     * otherwise we will eventually run into a null pointer.
+     * 
+     * @param builder
+     *            -- StringBuilder object passed in that allows
+     *            us to efficiently construct a String
+     * @param level
+     *            -- level we wish to print. Must satisfy above
+     *            inequality
+     */
     private void printGivenLevel(StringBuilder builder,
             int level) {
         if (level == 1) {
@@ -895,35 +874,4 @@ public class TTNode<Key extends Comparable<? super Key>,
             right.printGivenLevel(builder, level - 1);
         }
     } // end printGivenLevel
-
-    /**
-     * Private helper method used to build 2-3+ tree whenever two
-     * keys have equal values. We compare the values in order to
-     * break the tie so that values with equal keys are printed
-     * in proper order. In cases that keys are nonidentical, this
-     * is the same as calling
-     * 
-     * thisKey.compareTo(otherKey);
-     * 
-     * @param thisKey
-     *            -- key of first KVPair. Equivalent of caller of
-     *            compareTo
-     * @param thisVal
-     *            -- value of first KVPair
-     * @param otherKey
-     *            -- key of second KVPair. Equivalent of argument
-     *            in compareTo
-     * @param otherVal
-     *            -- value of second KVPair
-     * @return integer analogous to thisKey - otherKey (in
-     *         circumstance of integers)
-     */
-    private int compareKVPair(Key thisKey, Value thisVal,
-            Key otherKey, Value otherVal) {
-        int compKeys = thisKey.compareTo(otherKey);
-        if (compKeys == 0) {
-            return thisVal.compareTo(otherVal);
-        }
-        return compKeys;
-    } // end compareKVPair
 } // end TTNode

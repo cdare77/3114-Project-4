@@ -16,11 +16,10 @@ import javax.management.InstanceNotFoundException;
  * @param <Value>
  *            -- generic reference for data stored
  */
-public class TTTree<Key extends Comparable<? super Key>,
-        Value extends Comparable<? super Value>> {
+public class TTTree<Key extends Comparable<? super Key>> {
 
     // ---------------- PRIVATE VARIABLES---------------------
-    private TTNode<Key, Value> root;
+    private TTNode<Key> root;
     private int size;
 
     // ---------------- CONSTRUCTOR---------------------------
@@ -44,14 +43,13 @@ public class TTTree<Key extends Comparable<? super Key>,
      * @param val
      *            -- value to insert corresponding to KV pair
      */
-    public void insert(Key k, Value val) {
+    public void insert(Key k) {
         if (this.isEmpty()) {
             // Empty tree: create a leaf node for root
-            root = new TTNode<Key, Value>(k, val, null, null,
-                    null, null, null);
+            root = new TTNode<Key>(k, null, null, null, null);
         }
         else {
-            root = root.insertHelp(k, val);
+            root = root.insertHelp(k);
         }
         size++;
     } // end insert
@@ -62,16 +60,18 @@ public class TTTree<Key extends Comparable<? super Key>,
      * 
      * @param k
      *            -- key of KV pair we wish to remove
+     * 
      * @return reference to value stored in KV pair
      * @throws InstanceNotFoundException
      *             if key is not in tree
      */
-    public Value remove(Key k) throws InstanceNotFoundException {
+    public Key remove(Key k)
+            throws InstanceNotFoundException {
         if (this.isEmpty()) {
             throw new InstanceNotFoundException();
         }
 
-        Value toRet = root.removeHelper(k);
+        Key toRet = root.removeHelper(k);
 
         if (toRet == null) {
             // removeHelper returns null when instance
@@ -91,8 +91,8 @@ public class TTTree<Key extends Comparable<? super Key>,
         return toRet;
     }
 
-    public List<Value> rangeSearch(Key low, Key high) {
-        LinkedList<Value> toRet = new LinkedList<Value>();
+    public List<Key> rangeSearch(Key low, Key high) {
+        LinkedList<Key> toRet = new LinkedList<Key>();
         if (!this.isEmpty()) {
             root.rangeSearchHelper(low, high, toRet);
         }

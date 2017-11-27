@@ -1,11 +1,13 @@
 
 /**
- * Handle implementation of a hash table. Uses the string folding
- * method provided by OpenDSA 10.03.03 to hash the strings
- * pointed to by the handles and then find the correct placement
- * using quadratic probing. Supports insertion, deletion, and
- * searching using a String representing either an artists name
- * or a song.
+ * Handle implementation of a dynamic hash table. Uses the string
+ * folding method provided by OpenDSA 10.03.03 to hash the
+ * strings pointed to by the handles and then find the correct
+ * placement using quadratic probing. Supports insertion,
+ * deletion, and searching using a String representing either an
+ * artists name or a song. Dynamically resizes whenever the table
+ * becomes half full by reallocating a table of twice the size
+ * and rehashing all elements.
  * 
  * @author Chris Dare (cdare77@vt.edu)
  * @version 11/23/2017
@@ -15,9 +17,9 @@ public class HashTable {
 
     // ---------------- PRIVATE VARIABLES ----------------
 
-    private Handle[] table;
-    private int logicalSize;
-    private int physicalSize;
+    private Handle[] table; // array containing data
+    private int logicalSize; // current number of elements
+    private int physicalSize; // size of the array holding data
     private static final Handle GRAVESTONE =
             new Handle(new byte[0], -1, -1); // Gravestone
                                              // pointer
@@ -124,7 +126,7 @@ public class HashTable {
 
             if (table[pos] == null) {
                 // element not in table
-                return null;
+                break;
             }
             else if (table[pos].equals(handle)) {
                 // we are currently at the element
@@ -220,7 +222,7 @@ public class HashTable {
                 int newHome =
                         hash(newTable, table[i].getStringAt());
                 int pos;
-                
+
                 // QUADRATIC PROBE
                 for (int j = 0; j < newTable.length; j++) {
                     pos = (newHome + j * j) % newTable.length;
@@ -233,5 +235,5 @@ public class HashTable {
         } // end outerFor
         physicalSize *= 2;
         table = newTable;
-    }
+    } // end expandTable
 } // end HashTable

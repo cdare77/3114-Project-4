@@ -75,6 +75,7 @@ public class HashTableTest extends TestCase {
         assertTrue(table.insert(animals));
         assertTrue(table.insert(farAway));
         assertTrue(table.insert(howYouRemindMe));
+
         // Quadratic probing leads to endless loop
         // of taken spots
         assertFalse(table.insert(nickelback));
@@ -82,26 +83,33 @@ public class HashTableTest extends TestCase {
         assertTrue(table.insert(rockstar));
         assertTrue(table.insert(savinMe));
 
-        // force a successful quadratic probe
+        // insert a duplicate into the table
         assertTrue(table.insert(farAway));
 
         assertEquals(table.toString(),
-                "Animals @ 2, Rockstar @ 5, How You Remind Me @ 6,"
-                        + " Far Away @ 7, Far Away @ 8, Savin' Me @"
-                        + " 10, Photograph @ 15\nNumber of elements:"
-                        + " 7");
-        table.delete(farAway);
-        assertEquals(table.toString(),
-                "Animals @ 2, Rockstar @ 5, How You Remind Me @ 6,"
-                        + " Far Away @ 8, Savin' Me @ 10, Photograph"
-                        + " @ 15\nNumber of elements: 6");
-        // gravestone now at index=7
+                "Animals @ 2, Rockstar @ 5, How You Remind Me @ 6, "
+                        + "Far Away @ 7, Far Away @ 8, Savin' Me @ 10,"
+                        + " Photograph @ 15\nNumber of elements: 7");
+
+        table.clear();
+
+        table.insert(rockstar);
         table.insert(farAway);
+        table.insert(savinMe);
+        table.insert(animals);
+        table.insert(howYouRemindMe);
+        // nickelback gets quadratic probed from 6 to 15
+        table.insert(nickelback);
+        table.insert(photograph);
+
+        table.delete(savinMe);
+        // insert over a tombstone
+        table.insert(nickelback);
         assertEquals(table.toString(),
-                "Animals @ 2, Rockstar @ 5, How You Remind Me @ 6,"
-                        + " Far Away @ 7, Far Away @ 8, Savin' Me"
-                        + " @ 10, Photograph @ 15\nNumber of "
-                        + "elements: 7");
+                "Photograph @ 0, Animals @ 2, Rockstar @ 5, Nickelback"
+                        + " @ 6, Far Away @ 7, How You Remind Me @ 10,"
+                        + " Nickelback @ 15\nNumber of elements: 7");
+
     } // endTestInsert
 
     /**
@@ -183,5 +191,24 @@ public class HashTableTest extends TestCase {
                         + " Me @ 10, How You Remind Me @ 15\nNumber"
                         + " of elements: 7");
 
+    }
+
+    /**
+     * Tests the functionality of the clear method to assure
+     * there are no values in our table
+     */
+    public void testClear() {
+        table.insert(nickelback);
+        table.insert(savinMe);
+        table.insert(animals);
+        table.insert(farAway);
+        table.insert(howYouRemindMe);
+        table.insert(photograph);
+        table.insert(rockstar);
+
+        table.clear();
+        assertEquals(table.size(), 0);
+        assertEquals(table.toString(), "\n" +
+                "Number of elements: 0");
     }
 } // end HashTableTest

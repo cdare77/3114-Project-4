@@ -20,6 +20,7 @@ public class HashTable {
     private Handle[] table; // array containing data
     private int logicalSize; // current number of elements
     private int physicalSize; // size of the array holding data
+    private int defaultSize;
     private static final Handle GRAVESTONE =
             new Handle(new byte[0], -1, -1); // Gravestone
                                              // pointer
@@ -34,6 +35,7 @@ public class HashTable {
      */
     public HashTable(int size) {
         logicalSize = 0;
+        defaultSize = size;
         physicalSize = size;
         table = new Handle[physicalSize];
     }
@@ -64,10 +66,20 @@ public class HashTable {
                 table[pos] = handle;
                 logicalSize++;
                 return true;
-            }
-        }
+            } // end if
+        } // end for loop
 
         return false;
+    }
+    
+    /**
+     * Dereferences all objects in our table and creates a new
+     * table with the same initial size as the previous table
+     */
+    public void clear() {
+        table = new Handle[defaultSize];
+        logicalSize = 0;
+        physicalSize = defaultSize;
     }
 
     /**
@@ -81,7 +93,7 @@ public class HashTable {
      * 
      * @param name
      *            -- string to hash
-     * @return Handle -- reference to handle found, null if not
+     * @return reference to handle found, null if not
      *         found
      */
     public Handle search(String name) {
@@ -91,8 +103,7 @@ public class HashTable {
         // QUADRATIC PROBE
         for (int i = 0; i < table.length; i++) {
             // possibly iterate over entire table, but will
-            // likely
-            // stop before then
+            // likely stop before then
             pos = (homePos + i * i) % table.length;
             if (table[pos] == null) {
                 break;

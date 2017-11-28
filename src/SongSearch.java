@@ -22,9 +22,11 @@
 // -- Chris Dare
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.Scanner;
 
 /**
  * Main driver for Project 4 Song Database. Parses an input file
@@ -56,8 +58,7 @@ public class SongSearch {
     private static TTTree<KVPair<Handle, Handle>> artistTree;
     private static TTTree<KVPair<Handle, Handle>> songTree;
     private static int offset;
-    
-    
+
     // ------------------- PUBLIC METHODS ----------------------
 
     /**
@@ -89,23 +90,105 @@ public class SongSearch {
         memory = new byte[blockSize];
         offset = 0;
 
+        // Create our hash tables
+        artistTable = new HashTable(initialHashSize);
+        songTable = new HashTable(initialHashSize);
+
+        parseCommandFile();
     } // end main()
 
     private static void parseCommandFile() {
-        // TODO
+        try {
+            Scanner scan = new Scanner(commandFile);
+            String command;
+            while (scan.hasNext()) {
+                command = scan.next();
+
+                if (command.contains("insert")) {
+                    parseInsert(scan);
+                }
+                else if (command.contains("print")) {
+                    parsePrint(scan);
+                }
+                // TODO rest of commands
+            }
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void parseInsert() {
-        // TODO
+    /**
+     * Inserts an artist and song from our command file into main
+     * memory, thus creating handles pointing to each, and
+     * inserting those handles into their respective data
+     * structures.
+     * 
+     * format: insert {artist-name}<SEP>{song-name}
+     * 
+     * @param scan
+     *            -- scanner currently used to read command file
+     */
+    private static void parseInsert(Scanner scan) {
+        String[] artistSong =
+                scan.next().split("<SEP>");
+        // create handles by inserting our data into
+        // memory
+        Handle artist =
+                insertIntoMemory(artistSong[0]);
+        Handle song =
+                insertIntoMemory(artistSong[1]);
+        // place those handles created into our data
+        // structures
+        if (artistTable.search(artistSong[0]) == null) {
+            // do not insert duplicates into our hash table
+            artistTable.insert(artist);
+        }
+        if (songTable.search(artistSong[1]) == null) {
+            // do not insert duplicates into our hash table
+            songTable.insert(song);
+        }
+        artistTree.insert(new KVPair<Handle, Handle>(
+                artist, song));
+        songTree.insert(new KVPair<Handle, Handle>(
+                song, artist));
     }
 
     private static void parseRemove() {
         // TODO
     }
 
-    private static void parsePrint() {
-        // TODO
-    }
+    /**
+     * Prints the contents of one or two of our data structures
+     * depending on the next argument provided. If we wish to
+     * print all the artists or songs, we simply move
+     * sequentially through the respective hashTable, printing
+     * off all elements and their positions. However, if we wish
+     * to print our tree, we must print both the tree
+     * corresponding to artist and the tree corresponding to
+     * song.
+     * 
+     * format: print {artist|song|tree}
+     * 
+     * @param scan
+     *            -- scanner currently used to read command file
+     */
+    private static void parsePrint(Scanner scan) {
+        String argument = scan.next();
+        if (argument.contains("artist")) {
+            // called print artist
+            System.out.println(artistTable);
+        }
+        else if (argument.contains("song")) {
+            // called print song
+            System.out.println(songTable);
+        }
+        else {
+            // only thing left is print tree
+            System.out.println(artistTree);
+            System.out.println(songTree);
+        }
+    } // end parsePrint
 
     private static void parseList() {
         // TODO
@@ -132,10 +215,39 @@ public class SongSearch {
         memory[offset++] = (byte) ((length >> 8) & 0xff);
         // copy string into next 'length' bytes
         System.arraycopy(nameArr, 0, memory, offset, length);
+
         Handle toRet = new Handle(memory, offset, length);
         offset += length;
+        // return new handle pointing to record just inserted
         return toRet;
     }
+
+    private static boolean deleteFromMemory(String name,
+            boolean isArtist) {
+        Handle toFind;
+        // find handle corresponding to our String name
+        if (isArtist) {
+            toFind = artistTable.search(name);
+        }
+        else {
+            toFind = songTable.search(name);
+        }
+
+        if (toFind == null) {
+            // the name specified was not an artist or song name
+            // stored in memory
+            return false;
+        }
+        else {
+            // record found
+            int offset = toFind.getOffset();
+            // set flag of record to delete as 0x00. Record will
+            // be wiped from main memory the next time we expand
+            // our table
+            memory[offset - 3] = 0x00;
+            return true;
+        } // end else
+    } // end deleteFromMemory
 
     private static void expandMemory() {
         byte[] newMemory = new byte[memory.length + blockSize];
@@ -160,8 +272,7 @@ public class SongSearch {
                                 i + 3 + length));
 
                 // Move data over to new array, including flag
-                // and
-                // length
+                // and length
                 System.arraycopy(memory, i, newMemory, newOffset,
                         length + 3);
 

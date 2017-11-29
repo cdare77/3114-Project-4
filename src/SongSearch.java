@@ -26,7 +26,10 @@ import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+
+import javax.management.InstanceNotFoundException;
 
 /**
  * Main driver for Project 4 Song Database. Parses an input file
@@ -58,6 +61,23 @@ public class SongSearch {
     private static TTTree<KVPair<Handle, Handle>> artistTree;
     private static TTTree<KVPair<Handle, Handle>> songTree;
     private static int offset;
+
+    /*
+     * Used in range searches for one particular artist. Low
+     * string lets us use the lexicographically smallest string
+     * in the value reference of a KVPair in order to find all
+     * instances matching a particular artist name. For example,
+     * 
+     * tree.rangeSearch(new KVPair<Handle, Handle>(artist,
+     * LOW_STRING), new KVPair<Handle, Handle>(artist,
+     * HIGH_STRING))
+     * 
+     * returns all KVPairs with Key value artist.
+     */
+    private static final Handle LOW_STRING =
+            new Handle("".getBytes(), 0, 0);
+    private static final Handle HIGH_STRING =
+            new Handle("~~~~~~~~~~~~~~~~~".getBytes(), 0, 17);
 
     // ------------------- PUBLIC METHODS ----------------------
 
@@ -130,33 +150,106 @@ public class SongSearch {
      *            -- scanner currently used to read command file
      */
     private static void parseInsert(Scanner scan) {
+        // Parse the next String as the concatenation
+        // of our artist and song separated by delimiter <SEP>
         String[] artistSong =
                 scan.next().split("<SEP>");
-        // create handles by inserting our data into
-        // memory
-        Handle artist =
-                insertIntoMemory(artistSong[0]);
-        Handle song =
-                insertIntoMemory(artistSong[1]);
-        // place those handles created into our data
-        // structures
-        if (artistTable.search(artistSong[0]) == null) {
-            // do not insert duplicates into our hash table
+        // create references in memory to
+        Handle artist = artistTable.search(artistSong[0]);
+        Handle song = songTable.search(artistSong[1]);
+
+        // if either string is not contained in memory,
+        // we create a handle and insert it into memory
+        if (artist == null) {
+            // artist is not in memory
+
+            // first insert bytes into memory and return
+            // handle pointing to position
+            artist = insertIntoMemory(artistSong[0]);
+            // next add handle to artist hash table
             artistTable.insert(artist);
         }
-        if (songTable.search(artistSong[1]) == null) {
-            // do not insert duplicates into our hash table
+        if (song == null) {
+            // song not in memory
+
+            // first insert bytes into memory and return
+            // handle pointing to position
+            song = insertIntoMemory(artistSong[1]);
+            // next add handle to song hash table
             songTable.insert(song);
         }
+
+        // regardless of whether either artist or song were in
+        // memory, we want to add the pair to both trees so that
+        // their references are joined
         artistTree.insert(new KVPair<Handle, Handle>(
                 artist, song));
         songTree.insert(new KVPair<Handle, Handle>(
                 song, artist));
-    }
+    } // end parseInsert
 
-    private static void parseRemove() {
-        // TODO
-    }
+    private static void parseRemove(Scanner scan)
+            throws InstanceNotFoundException {
+        
+        String argument = scan.next();
+        String name = scan.next();
+
+        if (argument.contains("artist")) {
+            Handle artistHandle = artistTable.search(name);
+
+            if (artistHandle == null) {
+                // TODO artist not in table
+                return;
+            }
+            List<KVPair<Handle, Handle>> byThisArtist =
+                    allWithKey(artistHandle, true);
+            List<KVPair<Handle, Handle>> hasThisSong;
+            Handle songHandle;
+
+            for (KVPair<Handle, Handle> pair : byThisArtist) {
+                songHandle = pair.getValue();
+
+                artistTree.remove(pair);
+                songTree.remove(new KVPair<Handle, Handle>(
+                        songHandle, artistHandle));
+                hasThisSong = allWithKey(songHandle, false);
+
+                if (hasThisSong.size() == 0) {
+                    cleanUpReferences(songHandle, false);
+                }
+            }
+
+            cleanUpReferences(artistHandle, true);
+        }
+        else {
+            Handle songHandle = songTable.search(name);
+
+            if (songHandle == null) {
+                // TODO song not in table
+                return;
+            }
+            List<KVPair<Handle, Handle>> hasThisSong =
+                    allWithKey(songHandle, false);
+            List<KVPair<Handle, Handle>> byThisArtist;
+            Handle artistHandle;
+
+            for (KVPair<Handle, Handle> pair : hasThisSong) {
+                artistHandle = pair.getValue();
+
+                songTree.remove(pair);
+                artistTree.remove(new KVPair<Handle, Handle>(
+                        artistHandle, songHandle));
+
+                byThisArtist = allWithKey(artistHandle, true);
+
+                if (byThisArtist.size() == 0) {
+                    cleanUpReferences(artistHandle, true);
+                }
+            }
+
+            cleanUpReferences(songHandle, false);
+        }
+    } // end parseRemove
 
     /**
      * Prints the contents of one or two of our data structures
@@ -194,60 +287,107 @@ public class SongSearch {
         // TODO
     }
 
-    private static void parseDelete() {
-        // TODO
-    }
+    private static void parseDelete(Scanner scan) {
+        String[] artistSong =
+                scan.next().split("<SEP>");
+        Handle artistHandle = artistTable.search(artistSong[0]);
+        Handle songHandle = songTable.search(artistSong[1]);
+
+        if (artistHandle == null || songHandle == null) {
+            // TODO either invalid artist or invalid song
+            return;
+        }
+
+        // remove this specific combination from both
+        // trees
+        try {
+            artistTree.remove(new KVPair<Handle, Handle>(
+                    artistHandle, songHandle));
+            songTree.remove(
+                    new KVPair<Handle, Handle>(songHandle,
+                            artistHandle));
+
+            // likely does not have any worse efficiency than
+            // O(log n) unless this artist or song takes up a
+            // significant portion of the table
+            int thisSongLeft =
+                    allWithKey(songHandle, false).size();
+            int thisArtistLeft =
+                    allWithKey(artistHandle, true).size();
+
+            if (thisSongLeft == 0) {
+                cleanUpReferences(songHandle, false);
+            }
+            if (thisArtistLeft == 0) {
+                cleanUpReferences(artistHandle, true);
+            }
+
+        } // end try
+        catch (InstanceNotFoundException e) {
+            // TODO either invalid artist or invalid song
+            return;
+        } // end catch
+
+    } // end parseDelete
 
     private static Handle insertIntoMemory(String name) {
-        // mark flag as active since we just inserted it
+        // find number of bytes to insert into memory
         byte[] nameArr = name.getBytes();
         short length = (short) nameArr.length;
-
         // Expand memory whenever current array size is not
         // enough
         if (offset + length + 3 >= memory.length) {
             expandMemory();
         }
-        // first byte marks flag
+        // mark flag as active since we just inserted it
         memory[offset++] = 0x01;
         // store length in little endian order
         memory[offset++] = (byte) (length & 0xff);
         memory[offset++] = (byte) ((length >> 8) & 0xff);
         // copy string into next 'length' bytes
-        System.arraycopy(nameArr, 0, memory, offset, length);
-
-        Handle toRet = new Handle(memory, offset, length);
+        System.arraycopy(nameArr, 0, memory, offset,
+                length);
+        // update pointer to offset
         offset += length;
         // return new handle pointing to record just inserted
-        return toRet;
+        return new Handle(memory, offset - length, length);
     }
 
-    private static boolean deleteFromMemory(String name,
-            boolean isArtist) {
-        Handle toFind;
-        // find handle corresponding to our String name
-        if (isArtist) {
-            toFind = artistTable.search(name);
-        }
-        else {
-            toFind = songTable.search(name);
-        }
+    private static void deleteFromMemory(Handle handle) {
+        // make corresponding marks to memory (null
+        // out the flag)
+        int offset = handle.getOffset();
+        memory[offset - 3] = 0x00;
+    }
 
-        if (toFind == null) {
-            // the name specified was not an artist or song name
-            // stored in memory
-            return false;
+    private static void cleanUpReferences(Handle handleName,
+            boolean isArtist) {
+        if (isArtist) {
+            artistTable.delete(handleName);
         }
         else {
-            // record found
-            int offset = toFind.getOffset();
-            // set flag of record to delete as 0x00. Record will
-            // be wiped from main memory the next time we expand
-            // our table
-            memory[offset - 3] = 0x00;
-            return true;
-        } // end else
-    } // end deleteFromMemory
+            songTable.delete(handleName);
+        }
+        deleteFromMemory(handleName);
+    }
+
+    private static List<KVPair<Handle, Handle>> allWithKey(
+            Handle handle, boolean keyIsArtist) {
+        if (keyIsArtist) {
+            return artistTree.rangeSearch(
+                    new KVPair<Handle, Handle>(handle,
+                            LOW_STRING),
+                    new KVPair<Handle, Handle>(handle,
+                            HIGH_STRING));
+        }
+        else {
+            return songTree.rangeSearch(
+                    new KVPair<Handle, Handle>(handle,
+                            LOW_STRING),
+                    new KVPair<Handle, Handle>(handle,
+                            HIGH_STRING));
+        }
+    }
 
     private static void expandMemory() {
         byte[] newMemory = new byte[memory.length + blockSize];

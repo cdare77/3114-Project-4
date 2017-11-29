@@ -253,7 +253,7 @@ public class TTNode<Key extends Comparable<? super Key>> {
                 successor.setLeftKey(toRet);
                 toRet = this.center.removeHelper(k);
             }
-        }
+        } // end if (left key matchts)
         else if (rkey != null
                 && k.compareTo(rkey) == 0) {
             // current node has desired key in right
@@ -279,7 +279,7 @@ public class TTNode<Key extends Comparable<? super Key>> {
                 successor.setLeftKey(toRet);
                 toRet = this.right.removeHelper(k);
             }
-        }
+        } // end else if (right key matches)
         else {
             // desired key is not in this node
             if (this.isLeaf()) {

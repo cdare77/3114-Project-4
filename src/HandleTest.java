@@ -70,48 +70,48 @@ public class HandleTest extends TestCase {
     } // end setUp
 
     /**
-     * Tests the functionality of the accessor methods for 
+     * Tests the functionality of the accessor methods for
      * offset, length, and memory
      */
     public void testAccessor() {
         assertEquals(nickelback.getOffset(), 0);
         assertEquals(nickelback.getLength(), 10);
         assertEquals(nickelback.getMemory(), memory);
-        
+
         assertEquals(photograph.getOffset(), 10);
         assertEquals(photograph.getLength(), 10);
-        
+
         assertEquals(rockstar.getOffset(), 20);
         assertEquals(rockstar.getLength(), 8);
-        
+
         assertEquals(savinMe.getOffset(), 28);
         assertEquals(savinMe.getLength(), 9);
-        
+
         assertEquals(howYouRemindMe.getOffset(), 37);
         assertEquals(howYouRemindMe.getLength(), 17);
-        
+
         assertEquals(farAway.getOffset(), 54);
         assertEquals(farAway.getLength(), 8);
-        
+
         assertEquals(animals.getOffset(), 62);
         assertEquals(animals.getLength(), 7);
     }
-    
+
     /**
      * Tests the functionality of the modifier methods for
-     * offset, length, and memory. Ensures private variables
-     * are modified through accessor methods
+     * offset, length, and memory. Ensures private variables are
+     * modified through accessor methods
      */
     public void testModifier() {
         byte[] emptyArr = new byte[96];
-        
+
         nickelback.setLength(-1);
         nickelback.setOffset(-1);
         nickelback.setMemory(emptyArr);
         assertEquals(nickelback.getOffset(), -1);
         assertEquals(nickelback.getLength(), -1);
         assertEquals(nickelback.getMemory(), emptyArr);
-        
+
         photograph.setLength(-1);
         photograph.setOffset(-1);
         photograph.setMemory(emptyArr);
@@ -125,14 +125,14 @@ public class HandleTest extends TestCase {
         assertEquals(rockstar.getOffset(), -1);
         assertEquals(rockstar.getLength(), -1);
         assertEquals(rockstar.getMemory(), emptyArr);
-        
+
         savinMe.setLength(-1);
         savinMe.setOffset(-1);
         savinMe.setMemory(emptyArr);
         assertEquals(savinMe.getOffset(), -1);
         assertEquals(savinMe.getLength(), -1);
         assertEquals(savinMe.getMemory(), emptyArr);
-        
+
         howYouRemindMe.setOffset(-1);
         howYouRemindMe.setLength(-1);
         howYouRemindMe.setMemory(emptyArr);
@@ -140,7 +140,6 @@ public class HandleTest extends TestCase {
         assertEquals(howYouRemindMe.getLength(), -1);
         assertEquals(howYouRemindMe.getMemory(), emptyArr);
     }
-    
 
     /**
      * Tests the functionality of the accessor method for the

@@ -1,4 +1,3 @@
-
 // On my honor:
 //
 // - I have not used source code obtained from another student,
@@ -25,8 +24,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Scanner;
-
-import javax.management.InstanceNotFoundException;
 
 /**
  * Main driver for Project 4 Song Database. Parses an input file
@@ -177,7 +174,7 @@ public class SongSearch {
         // of our artist and song separated by delimiter <SEP>
         String toInsert = scan.nextLine().substring(1);
         String[] artistSong = toInsert.split("<SEP>");
-        
+
         if (artistSong[1].equals("Breath")) {
             System.out.print("");
         }
@@ -214,106 +211,102 @@ public class SongSearch {
         String argument = scan.next();
         String name = scan.nextLine().substring(1);
 
-        try {
-            if (argument.contains("artist")) {
-                // artist we are trying to find all song-artist
-                // pairs of
-                Handle artistHandle = artistTable.search(name);
+        if (argument.contains("artist")) {
+            // artist we are trying to find all song-artist
+            // pairs of
+            Handle artistHandle = artistTable.search(name);
 
-                if (artistHandle == null) {
-                    // TODO artist not in table
-                    return;
-                }
+            if (artistHandle == null) {
+                // TODO artist not in table
+                return;
+            }
 
-                // get a list of all song-artist pairs with
-                // artist name "name"
-                List<KVPair<Handle, Handle>> byThisArtist =
+            // get a list of all song-artist pairs with
+            // artist name "name"
+            List<KVPair<Handle, Handle>> byThisArtist =
+                    allWithKey(artistHandle, true);
+            // used to check how many artists each song is
+            // linked to
+            List<KVPair<Handle, Handle>> hasThisSong;
+            // pointer to current song
+            Handle songHandle;
+
+            // iterate over list of song-artist pairs by
+            // artist "name"
+            for (KVPair<Handle,
+                    Handle> pair : byThisArtist) {
+                // current song
+                songHandle = pair.getValue();
+
+                // remove the pair from both trees
+                artistTree.remove(pair);
+                songTree.remove(new KVPair<Handle, Handle>(
+                        songHandle, artistHandle));
+
+                // Check if there are no other artists
+                // connected to this song
+                hasThisSong = allWithKey(songHandle, false);
+
+                if (hasThisSong.size() == 0) {
+                    // there are no other artists connected
+                    // to this song so we can simply wipe it
+                    // from memory and its hash table
+                    memory.delete(songHandle, false);
+                } // end if
+            } // end for
+
+            memory.delete(artistHandle, true);
+        } // end if (argument artist)
+        else {
+            // song we are trying to find all song-artist
+            // pairs of
+            Handle songHandle = songTable.search(name);
+
+            if (songHandle == null) {
+                // TODO song not in table
+                return;
+            }
+            // get a list of all song-artist with songname
+            // "name"
+            List<KVPair<Handle, Handle>> hasThisSong =
+                    allWithKey(songHandle, false);
+            // used to check how many songs each artist is
+            // linked to
+            List<KVPair<Handle, Handle>> byThisArtist;
+            // pointer to curret artist
+            Handle artistHandle;
+
+            // iterate over list of song-artist pairs with
+            // songname "name"
+            for (KVPair<Handle, Handle> pair : hasThisSong) {
+                // current artist
+                artistHandle = pair.getValue();
+                // remove the pair from both trees
+                songTree.remove(pair);
+                artistTree.remove(new KVPair<Handle, Handle>(
+                        artistHandle, songHandle));
+
+                // check if we can remove artist from memory
+                // and hash tables. Since we just removed a
+                // song-artist pair, we need to see if this
+                // artist pops up again
+                byThisArtist =
                         allWithKey(artistHandle, true);
-                // used to check how many artists each song is
-                // linked to
-                List<KVPair<Handle, Handle>> hasThisSong;
-                // pointer to current song
-                Handle songHandle;
 
-                // iterate over list of song-artist pairs by
-                // artist "name"
-                for (KVPair<Handle,
-                        Handle> pair : byThisArtist) {
-                    // current song
-                    songHandle = pair.getValue();
+                if (byThisArtist.size() == 0) {
+                    // if there are no more songs tied to
+                    // this artist, we simply remove the
+                    // artist from memory and the hash table
+                    memory.delete(artistHandle, true);
+                } // end if
+            } // end for
 
-                    // remove the pair from both trees
-                    artistTree.remove(pair);
-                    songTree.remove(new KVPair<Handle, Handle>(
-                            songHandle, artistHandle));
+            // we just removed all instances of this song, so
+            // we should remove it from memory and the hash
+            // table
+            memory.delete(songHandle, false);
+        } // end else (argument song)
 
-                    // Check if there are no other artists
-                    // connected to this song
-                    hasThisSong = allWithKey(songHandle, false);
-
-                    if (hasThisSong.size() == 0) {
-                        // there are no other artists connected
-                        // to this song so we can simply wipe it
-                        // from memory and its hash table
-                        memory.delete(songHandle, false);
-                    } // end if
-                } // end for
-
-                memory.delete(artistHandle, true);
-            } // end if (argument artist)
-            else {
-                // song we are trying to find all song-artist
-                // pairs of
-                Handle songHandle = songTable.search(name);
-
-                if (songHandle == null) {
-                    // TODO song not in table
-                    return;
-                }
-                // get a list of all song-artist with songname
-                // "name"
-                List<KVPair<Handle, Handle>> hasThisSong =
-                        allWithKey(songHandle, false);
-                // used to check how many songs each artist is
-                // linked to
-                List<KVPair<Handle, Handle>> byThisArtist;
-                // pointer to curret artist
-                Handle artistHandle;
-
-                // iterate over list of song-artist pairs with
-                // songname "name"
-                for (KVPair<Handle, Handle> pair : hasThisSong) {
-                    // current artist
-                    artistHandle = pair.getValue();
-                    // remove the pair from both trees
-                    songTree.remove(pair);
-                    artistTree.remove(new KVPair<Handle, Handle>(
-                            artistHandle, songHandle));
-
-                    // check if we can remove artist from memory
-                    // and hash tables. Since we just removed a
-                    // song-artist pair, we need to see if this
-                    // artist pops up again
-                    byThisArtist =
-                            allWithKey(artistHandle, true);
-
-                    if (byThisArtist.size() == 0) {
-                        // if there are no more songs tied to
-                        // this artist, we simply remove the
-                        // artist from memory and the hash table
-                        memory.delete(artistHandle, true);
-                    } // end if
-                } // end for
-
-                // we just removed all instances of this song, so
-                // we should remove it from memory and the hash
-                // table
-                memory.delete(songHandle, false);
-            } // end else (argument song)
-        }
-        catch (InstanceNotFoundException e) {
-            e.printStackTrace();
-        }
     } // end parseRemove
 
     /**
@@ -431,40 +424,32 @@ public class SongSearch {
 
         // remove this specific combination from both
         // trees
-        try {
-            artistTree.remove(new KVPair<Handle, Handle>(
-                    artistHandle, songHandle));
-            songTree.remove(
-                    new KVPair<Handle, Handle>(songHandle,
-                            artistHandle));
+        artistTree.remove(new KVPair<Handle, Handle>(
+                artistHandle, songHandle));
+        songTree.remove(
+                new KVPair<Handle, Handle>(songHandle,
+                        artistHandle));
 
-            // likely does not have any worse efficiency than
-            // O(log n) unless this artist or song takes up a
-            // significant portion of the table
-            int thisSongLeft =
-                    allWithKey(songHandle, false).size();
-            int thisArtistLeft =
-                    allWithKey(artistHandle, true).size();
+        // likely does not have any worse efficiency than
+        // O(log n) unless this artist or song takes up a
+        // significant portion of the table
+        int thisSongLeft =
+                allWithKey(songHandle, false).size();
+        int thisArtistLeft =
+                allWithKey(artistHandle, true).size();
 
-            if (thisSongLeft == 0) {
-                // there are no more instances of this song
-                // attached to any other artist, so we remove all
-                // references to it
-                memory.delete(songHandle, false);
-            }
-            if (thisArtistLeft == 0) {
-                // there are no more instances of this artist
-                // having any other songs, so we remove all
-                // references to it
-                memory.delete(artistHandle, true);
-            }
-
-        } // end try
-        catch (InstanceNotFoundException e) {
-            // TODO either invalid artist or invalid song
-            return;
-        } // end catch
-
+        if (thisSongLeft == 0) {
+            // there are no more instances of this song
+            // attached to any other artist, so we remove all
+            // references to it
+            memory.delete(songHandle, false);
+        }
+        if (thisArtistLeft == 0) {
+            // there are no more instances of this artist
+            // having any other songs, so we remove all
+            // references to it
+            memory.delete(artistHandle, true);
+        }
     } // end parseDelete
 
     /**

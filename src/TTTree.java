@@ -1,6 +1,5 @@
 import java.util.LinkedList;
 import java.util.List;
-import javax.management.InstanceNotFoundException;
 
 /**
  * Standard implementation of a 2-3+ tree. Since our 2-3+ node
@@ -62,13 +61,10 @@ public class TTTree<Key extends Comparable<? super Key>> {
      *            -- key of KV pair we wish to remove
      * 
      * @return reference to value stored in KV pair
-     * @throws InstanceNotFoundException
-     *             if key is not in tree
      */
-    public Key remove(Key k)
-            throws InstanceNotFoundException {
+    public Key remove(Key k) {
         if (this.isEmpty()) {
-            throw new InstanceNotFoundException();
+            return null;
         }
 
         Key toRet = root.removeHelper(k);
@@ -77,7 +73,7 @@ public class TTTree<Key extends Comparable<? super Key>> {
             // removeHelper returns null when instance
             // is not in tree. We continue this error handling
             // by throwing an exception
-            throw new InstanceNotFoundException();
+            return null;
         }
         if (root.lkey() == null) {
             // instance where removal caused imbalance

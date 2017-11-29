@@ -1,6 +1,4 @@
 import java.util.List;
-import javax.management.InstanceNotFoundException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,14 +49,10 @@ public class TTTreeTest extends TestCase {
      * Tests the remove method against the desired functionality
      */
     public void testRemove() {
-        Exception ex = null;
-        try {
-            tree.remove(new KVPair<Integer, Integer>(20, 20));
-        }
-        catch (Exception e) {
-            ex = e;
-        }
-        assertTrue(ex instanceof InstanceNotFoundException);
+
+        // remove from an empty tree
+        assertNull(tree
+                .remove(new KVPair<Integer, Integer>(20, 20)));
 
         tree.insert(new KVPair<Integer, Integer>(10, 10));
         tree.insert(new KVPair<Integer, Integer>(20, 10));
@@ -74,37 +68,28 @@ public class TTTreeTest extends TestCase {
                 + " (25, 1)] \n");
         assertEquals(8, tree.size());
 
-        try {
-            tree.remove(new KVPair<Integer, Integer>(16, 16));
-            assertEquals(tree.toString(),
-                    "[(15, 10), (17, 1)] \n" +
-                            "[(5, 1), (10, 10)] [(16, 16), null] "
-                            + "[(20, 10), (25, 1)] \n");
-            tree.remove(new KVPair<Integer, Integer>(16, 16));
-            assertEquals(tree.toString(),
-                    "[(10, 10), (17, 1)] \n" +
-                            "[(5, 1), null] [(15, 10), null] "
-                            + "[(20, 10), (25, 1)] \n");
-            tree.remove(new KVPair<Integer, Integer>(5, 1));
-            assertEquals(tree.toString(),
-                    "[(15, 10), (20, 10)] \n" +
-                            "[(10, 10), null] [(17, 1), null]"
-                            + " [(25, 1), null] \n");
-            assertEquals(5, tree.size());
-        }
-        catch (InstanceNotFoundException e) {
-            e.printStackTrace();
-        }
+        tree.remove(new KVPair<Integer, Integer>(16, 16));
+        assertEquals(tree.toString(),
+                "[(15, 10), (17, 1)] \n" +
+                        "[(5, 1), (10, 10)] [(16, 16), null] "
+                        + "[(20, 10), (25, 1)] \n");
+        tree.remove(new KVPair<Integer, Integer>(16, 16));
+        assertEquals(tree.toString(),
+                "[(10, 10), (17, 1)] \n" +
+                        "[(5, 1), null] [(15, 10), null] "
+                        + "[(20, 10), (25, 1)] \n");
+        tree.remove(new KVPair<Integer, Integer>(5, 1));
+        assertEquals(tree.toString(),
+                "[(15, 10), (20, 10)] \n" +
+                        "[(10, 10), null] [(17, 1), null]"
+                        + " [(25, 1), null] \n");
+        assertEquals(5, tree.size());
 
-        ex = null;
-        try {
-            tree.remove(new KVPair<Integer, Integer>(100, 100));
-        }
-        catch (InstanceNotFoundException e) {
-            ex = e;
-        }
-        assertTrue(ex instanceof InstanceNotFoundException);
+        // remove an element not in the tree
+        assertNull(tree
+                .remove(new KVPair<Integer, Integer>(100, 100)));
 
+        // start over with new tree
         tree.clear();
         assertTrue(tree.isEmpty());
 
@@ -113,13 +98,10 @@ public class TTTreeTest extends TestCase {
         tree.insert(new KVPair<Integer, Integer>(4, 4));
         assertEquals(tree.toString(), "[(7, 7), null] \n" +
                 "[(4, 4), null] [(9, 9), null] \n");
-        try {
-            tree.remove(new KVPair<Integer, Integer>(7, 7));
-            assertEquals("[(4, 4), (9, 9)] \n", tree.toString());
-        }
-        catch (InstanceNotFoundException e) {
-            e.printStackTrace();
-        }
+
+        tree.remove(new KVPair<Integer, Integer>(7, 7));
+        assertEquals("[(4, 4), (9, 9)] \n", tree.toString());
+
     }
 
     @Test
@@ -194,8 +176,8 @@ public class TTTreeTest extends TestCase {
                 new KVPair<Integer, Integer>(16, 0),
                 new KVPair<Integer, Integer>(40, 0));
         assertEquals("[(16, 16), (16, 16), (17, 1), (20, 10),"
-                        + " (21, 21), (25, 1), (30, 30), (35, 35)]",
-                        list.toString());
+                + " (21, 21), (25, 1), (30, 30), (35, 35)]",
+                list.toString());
 
         list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(6, 0),
@@ -269,7 +251,7 @@ public class TTTreeTest extends TestCase {
         assertTrue(tree.isEmpty());
         assertEquals(0, tree.size());
     }
-    
+
     @Test
     public void testPrintInOrder() {
         tree.insert(new KVPair<Integer, Integer>(10, 10));
@@ -289,11 +271,11 @@ public class TTTreeTest extends TestCase {
         tree.insert(new KVPair<Integer, Integer>(21, 21));
         tree.insert(new KVPair<Integer, Integer>(40, 40));
         tree.insert(new KVPair<Integer, Integer>(35, 35));
-        
+
         assertEquals(
                 "(2, 2)(4, 4)(5, 1)(6, 4)(6, 6)(7, 7)(10, 10)(15, 10)"
-                + "(16, 16)(16, 16)(17, 1)(20, 10)(21, 21)(25, 1)"
-                + "(30, 30)(35, 35)(40, 40)",
+                        + "(16, 16)(16, 16)(17, 1)(20, 10)(21, 21)(25, 1)"
+                        + "(30, 30)(35, 35)(40, 40)",
                 tree.printInOrder());
     }
 } // TTTreeTest

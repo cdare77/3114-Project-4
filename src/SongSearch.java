@@ -203,9 +203,14 @@ public class SongSearch {
      * Removes an artist or song from memory, making corrections
      * to all our data structures. The first step is getting a
      * list of all song-artist pairs connected to this
-     * song/artist. We then proceed to remove every pair
+     * song/artist. We then proceed to remove every pair from
+     * both trees, while removing from memory and hash tables if
+     * no other song-artist pairs point to this song/artist.
+     * 
+     * format: remove {artist|song} {name}
      * 
      * @param scan
+     *            -- scanner currently used to read command file
      */
     private static void parseRemove(Scanner scan) {
         // get the next two arguments in our current
@@ -436,27 +441,71 @@ public class SongSearch {
         return new Handle(memory, offset - length, length);
     }
 
+    /**
+     * Marks the flag as 0 in our memory byte []
+     * 
+     * @param handle
+     *            -- handle we wish to remove
+     */
     private static void deleteFromMemory(Handle handle) {
         // make corresponding marks to memory (null
         // out the flag)
         int offset = handle.getOffset();
         memory[offset - 3] = 0x00;
-    }
+    } // end delete from memory
 
+    /**
+     * Clears the given handle from both our memory and hash
+     * table. This should only be called after removing from our
+     * two trees, so that there are no remaining references to
+     * this handle and the runtime garbage collector can
+     * effectively return this memory to the system.
+     * 
+     * @param handleName
+     *            -- handle we wish to clear from memory and hash
+     *            table
+     * @param isArtist
+     *            -- flag indicating whether this handle points
+     *            to an artist or song
+     */
     private static void cleanUpReferences(Handle handleName,
             boolean isArtist) {
         if (isArtist) {
+            // handle points to an artist; thus remove from
+            // artist table
             artistTable.delete(handleName);
         }
         else {
+            // handle points to a song; thus remove from song
+            // table
             songTable.delete(handleName);
         }
         deleteFromMemory(handleName);
-    }
+    } // end cleanUpReferences
 
+    /**
+     * Calls on the functionality of range search to look for all
+     * song-artist pairs with the specified song / artist,
+     * returning found pairs in the format of a list
+     * 
+     * @param handle
+     *            -- artist/song pointer. If an artist handle,
+     *            this will return all songs by artist. If a song
+     *            handle, this will return all artists with this
+     *            song
+     * @param keyIsArtist
+     *            -- flag which tells us whether handle points to
+     *            an artist or song
+     * @return list of all song-artist pairs matching artist/song
+     *         in handle
+     */
     private static List<KVPair<Handle, Handle>> allWithKey(
             Handle handle, boolean keyIsArtist) {
+
         if (keyIsArtist) {
+            // handle points to an artist, thus we call
+            // rangeSearch
+            // on our artist tree to get all songs by this artist
             return artistTree.rangeSearch(
                     new KVPair<Handle, Handle>(handle,
                             LOW_STRING),
@@ -464,17 +513,31 @@ public class SongSearch {
                             HIGH_STRING));
         }
         else {
+            // handle points to a song, thus we call rangeSearch
+            // on our song tree to get all artists with a
+            // songname pointed to by handle
             return songTree.rangeSearch(
                     new KVPair<Handle, Handle>(handle,
                             LOW_STRING),
                     new KVPair<Handle, Handle>(handle,
                             HIGH_STRING));
-        }
-    }
+        } // end else
+    } // end allWithKey
 
+    /**
+     * Private helper method which lets our 'memory' byte array
+     * to be dynamic, expanding whenever there is not enough
+     * space to insert. We expand by the initial size of our
+     * memory, and copy over valid elements (ones with nonzero
+     * flag)
+     */
     private static void expandMemory() {
+        // replaces our current reference to memory
         byte[] newMemory = new byte[memory.length + blockSize];
+        // length of every record we insert
         short length;
+        // since we dont insert records with zero flag, our
+        // offset and newOffset may not always coincide
         int newOffset = 0;
 
         // iterate over our current memory

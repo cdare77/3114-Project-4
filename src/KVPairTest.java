@@ -5,6 +5,7 @@ import student.TestCase;
  * types in order to simplify compareTo results
  * 
  * @author Chris Dare (cdare77@vt.edu)
+ * @author Kenneth Worden (kworden@vt.edu)
  * @version 11/26/2017
  */
 public class KVPairTest extends TestCase {
@@ -31,16 +32,16 @@ public class KVPairTest extends TestCase {
      * for both key and value
      */
     public void testAccessor() {
-        assertEquals((int) first.getKey(), (int) 10);
-        assertEquals((int) first.getValue(), (int) 5);
-        assertEquals((int) second.getKey(), (int) 8);
-        assertEquals((int) second.getValue(), (int) (-2));
-        assertEquals((int) third.getKey(), (int) 5);
-        assertEquals((int) third.getValue(), (int) 10);
-        assertEquals((int) fourth.getKey(), (int) 0);
-        assertEquals((int) fourth.getValue(), (int) 5);
-        assertEquals((int) fifth.getKey(), (int) 0);
-        assertEquals((int) fifth.getValue(), (int) 3);       
+        assertEquals((int) 10, (int) first.getKey());
+        assertEquals((int) 5, (int) first.getValue());
+        assertEquals((int) 8, (int) second.getKey());
+        assertEquals((int) (-2), (int) second.getValue());
+        assertEquals((int) 5, (int) third.getKey());
+        assertEquals((int) 10, (int) third.getValue());
+        assertEquals((int) 0, (int) fourth.getKey());
+        assertEquals((int) 5, (int) fourth.getValue());
+        assertEquals((int) 0, (int) fifth.getKey());
+        assertEquals((int) 3, (int) fifth.getValue());       
     }
     
     /**
@@ -50,24 +51,35 @@ public class KVPairTest extends TestCase {
     public void testModifier() {
         first.setKey(-1);
         first.setValue(-1);
-        assertEquals((int) first.getKey(), (int) -1);
-        assertEquals((int) first.getValue(), (int) -1);
+        assertEquals((int) -1, (int) first.getKey());
+        assertEquals((int) -1, (int) first.getValue());
+        
+        first.setKey(3);
+        first.setValue(5);
+        assertEquals((int) 3, (int) first.getKey());
+        assertEquals((int) 5, (int) first.getValue());
+        assertNotSame((int) first.getKey(), (int) -1);
+        assertNotSame((int) first.getValue(), (int) -1);
+        
         second.setKey(-1);
         second.setValue(-1);
-        assertEquals((int) second.getKey(), (int) -1);
-        assertEquals((int) second.getValue(), (int) -1);
+        assertEquals((int) -1, (int) second.getKey());
+        assertEquals((int) -1, (int) second.getValue());
+        
         third.setKey(-1);
         third.setValue(-1);
-        assertEquals((int) third.getKey(), (int) -1);
-        assertEquals((int) third.getValue(), (int) -1);
+        assertEquals((int) -1, (int) third.getKey());
+        assertEquals((int) -1, (int) third.getValue());
+        
         fourth.setKey(-1);
         fourth.setValue(-1);
-        assertEquals((int) fourth.getKey(), (int) -1);
-        assertEquals((int) fourth.getValue(), (int) -1);
+        assertEquals((int) -1, (int) fourth.getKey());
+        assertEquals((int) -1, (int) fourth.getValue());
+        
         fifth.setKey(-1);
         fifth.setValue(-1);
-        assertEquals((int) fifth.getKey(), (int) -1);
-        assertEquals((int) fifth.getValue(), (int) -1);   
+        assertEquals((int) -1, (int) fifth.getKey());
+        assertEquals((int) -1, (int) fifth.getValue());   
     }
     
     /**
@@ -88,7 +100,7 @@ public class KVPairTest extends TestCase {
      * Tests the toString method against expected outcome
      */
     public void testToString() {
-        assertEquals(first.toString(), "(10, 5)");
-        assertEquals(second.toString(), "(8, -2)");
+        assertEquals("(10, 5)", first.toString());
+        assertEquals("(8, -2)", second.toString());
     }
 } // end KVPairTest

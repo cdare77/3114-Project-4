@@ -472,6 +472,11 @@ public class SongSearch {
         }
     }
 
+    /**
+     * Expands memory by creating a new byte array and then
+     * copying all ACTIVE records into the new array. Note that
+     * inactive records (with a byte of 0) are not copied.
+     */
     private static void expandMemory() {
         byte[] newMemory = new byte[memory.length + blockSize];
         short length;

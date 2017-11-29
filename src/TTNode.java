@@ -410,6 +410,30 @@ public class TTNode<Key extends Comparable<? super Key>> {
         }
         return builder.toString();
     }
+    
+    /**
+     * Prints the node in order.
+     * @return string representation of the subtree
+     */
+    public String printInOrder() {
+        StringBuilder builder = new StringBuilder();
+        // Print out everything in order; there are no children
+        if (this.isLeaf()) {
+            builder.append(lkey);
+            if (rkey != null) {
+                builder.append(rkey);
+            }
+            return builder.toString();
+        }
+        builder.append(left.printInOrder());
+        builder.append(lkey);
+        builder.append(center.printInOrder());
+        if (right != null) {
+            builder.append(rkey);
+            builder.append(right.printInOrder());
+        }
+        return builder.toString();
+    }
 
     @Override
     public String toString() {

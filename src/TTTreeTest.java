@@ -44,7 +44,7 @@ public class TTTreeTest extends TestCase {
         assertEquals(tree.toString(), "[(15, 10), (17, 1)] \n" +
                 "[(5, 1), (10, 10)] [(16, 16), (16, 16)] [(20, 10),"
                 + " (25, 1)] \n");
-        assertEquals(tree.size(), 8);
+        assertEquals(8, tree.size());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class TTTreeTest extends TestCase {
         assertEquals(tree.toString(), "[(15, 10), (17, 1)] \n" +
                 "[(5, 1), (10, 10)] [(16, 16), (16, 16)] [(20, 10),"
                 + " (25, 1)] \n");
-        assertEquals(tree.size(), 8);
+        assertEquals(8, tree.size());
 
         try {
             tree.remove(new KVPair<Integer, Integer>(16, 16));
@@ -91,7 +91,7 @@ public class TTTreeTest extends TestCase {
                     "[(15, 10), (20, 10)] \n" +
                             "[(10, 10), null] [(17, 1), null]"
                             + " [(25, 1), null] \n");
-            assertEquals(tree.size(), 5);
+            assertEquals(5, tree.size());
         }
         catch (InstanceNotFoundException e) {
             e.printStackTrace();
@@ -116,7 +116,7 @@ public class TTTreeTest extends TestCase {
                 "[(4, 4), null] [(9, 9), null] \n");
         try {
             tree.remove(new KVPair<Integer, Integer>(7, 7));
-            assertEquals(tree.toString(), "[(4, 4), (9, 9)] \n");
+            assertEquals("[(4, 4), (9, 9)] \n", tree.toString());
         }
         catch (InstanceNotFoundException e) {
             e.printStackTrace();
@@ -128,43 +128,43 @@ public class TTTreeTest extends TestCase {
      * Tests the functionality of height after each insertion
      */
     public void testHeight() {
-        assertEquals(tree.height(), 0);
+        assertEquals(0, tree.height());
         tree.insert(new KVPair<Integer, Integer>(10, 10));
-        assertEquals(tree.height(), 1);
+        assertEquals(1, tree.height());
         tree.insert(new KVPair<Integer, Integer>(20, 10));
-        assertEquals(tree.height(), 1);
+        assertEquals(1, tree.height());
         tree.insert(new KVPair<Integer, Integer>(15, 10));
-        assertEquals(tree.height(), 2);
+        assertEquals(2, tree.height());
         tree.insert(new KVPair<Integer, Integer>(16, 16));
-        assertEquals(tree.height(), 2);
+        assertEquals(2, tree.height());
         tree.insert(new KVPair<Integer, Integer>(17, 1));
-        assertEquals(tree.height(), 2);
+        assertEquals(2, tree.height());
         tree.insert(new KVPair<Integer, Integer>(5, 1));
-        assertEquals(tree.height(), 2);
+        assertEquals(2, tree.height());
         tree.insert(new KVPair<Integer, Integer>(25, 1));
-        assertEquals(tree.height(), 2);
+        assertEquals(2, tree.height());
         tree.insert(new KVPair<Integer, Integer>(16, 16));
-        assertEquals(tree.height(), 2);
+        assertEquals(2, tree.height());
         tree.insert(new KVPair<Integer, Integer>(2, 2));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(30, 30));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(6, 6));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(4, 4));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(7, 7));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(6, 6));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(21, 21));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(40, 40));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(35, 35));
-        assertEquals(tree.height(), 3);
+        assertEquals(3, tree.height());
         tree.insert(new KVPair<Integer, Integer>(6, 6));
-        assertEquals(tree.height(), 4);
+        assertEquals(4, tree.height());
     } // end testInsert
 
     @Test
@@ -194,24 +194,24 @@ public class TTTreeTest extends TestCase {
         List<KVPair<Integer, Integer>> list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(16, 0),
                 new KVPair<Integer, Integer>(40, 0));
-        assertEquals(list.toString(),
-                "[(16, 16), (16, 16), (17, 1), (20, 10),"
-                        + " (21, 21), (25, 1), (30, 30), (35, 35)]");
+        assertEquals("[(16, 16), (16, 16), (17, 1), (20, 10),"
+                        + " (21, 21), (25, 1), (30, 30), (35, 35)]",
+                        list.toString());
 
         list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(6, 0),
                 new KVPair<Integer, Integer>(6, 100));
-        assertEquals(list.toString(), "[(6, 4), (6, 6)]");
+        assertEquals("[(6, 4), (6, 6)]", list.toString());
 
         list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(100, 0),
                 new KVPair<Integer, Integer>(101, 0));
-        assertEquals(list.toString(), "[]");
+        assertEquals("[]", list.toString());
 
         list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(1, 0),
                 new KVPair<Integer, Integer>(2, 100));
-        assertEquals(list.toString(), "[(2, 2)]");
+        assertEquals("[(2, 2)]", list.toString());
     }
 
     @Test
@@ -238,11 +238,11 @@ public class TTTreeTest extends TestCase {
         tree.insert(new KVPair<Integer, Integer>(40, 40));
         tree.insert(new KVPair<Integer, Integer>(35, 35));
 
-        assertEquals(tree.toString(), "[(15, 10), (25, 1)] \n" +
+        assertEquals("[(15, 10), (25, 1)] \n" +
                 "[(5, 1), (7, 7)] [(17, 1), null] [(35, 35), null] \n"
                 + "[(2, 2), (4, 4)] [(6, 4), (6, 6)] [(10, 10), null] "
                 + "[(16, 16), (16, 16)] [(20, 10), (21, 21)] [(30, 30),"
-                + " null] [(40, 40), null] \n");
+                + " null] [(40, 40), null] \n", tree.toString());
     }
 
     @Test
@@ -268,6 +268,33 @@ public class TTTreeTest extends TestCase {
         assertFalse(tree.isEmpty());
         tree.clear();
         assertTrue(tree.isEmpty());
-        assertEquals(tree.size(), 0);
+        assertEquals(0, tree.size());
+    }
+    
+    @Test
+    public void testPrintInOrder() {
+        tree.insert(new KVPair<Integer, Integer>(10, 10));
+        tree.insert(new KVPair<Integer, Integer>(20, 10));
+        tree.insert(new KVPair<Integer, Integer>(15, 10));
+        tree.insert(new KVPair<Integer, Integer>(16, 16));
+        tree.insert(new KVPair<Integer, Integer>(17, 1));
+        tree.insert(new KVPair<Integer, Integer>(5, 1));
+        tree.insert(new KVPair<Integer, Integer>(25, 1));
+        tree.insert(new KVPair<Integer, Integer>(16, 16));
+        tree.insert(new KVPair<Integer, Integer>(2, 2));
+        tree.insert(new KVPair<Integer, Integer>(30, 30));
+        tree.insert(new KVPair<Integer, Integer>(6, 4));
+        tree.insert(new KVPair<Integer, Integer>(4, 4));
+        tree.insert(new KVPair<Integer, Integer>(7, 7));
+        tree.insert(new KVPair<Integer, Integer>(6, 6));
+        tree.insert(new KVPair<Integer, Integer>(21, 21));
+        tree.insert(new KVPair<Integer, Integer>(40, 40));
+        tree.insert(new KVPair<Integer, Integer>(35, 35));
+        
+        assertEquals(
+                "(2, 2)(4, 4)(5, 1)(6, 4)(6, 6)(7, 7)(10, 10)(15, 10)"
+                + "(16, 16)(16, 16)(17, 1)(20, 10)(21, 21)(25, 1)"
+                + "(30, 30)(35, 35)(40, 40)",
+                tree.printInOrder());
     }
 } // TTTreeTest

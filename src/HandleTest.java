@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotEquals;
  * All functions are tested against the desired outcome
  * 
  * @author Chris Dare (cdare77@vt.edu)
+ * @author Kenneth Worden (kworden@vt.edu)
  * @version 11/26/2017
  */
 public class HandleTest extends TestCase {
@@ -74,27 +75,27 @@ public class HandleTest extends TestCase {
      * offset, length, and memory
      */
     public void testAccessor() {
-        assertEquals(nickelback.getOffset(), 0);
-        assertEquals(nickelback.getLength(), 10);
-        assertEquals(nickelback.getMemory(), memory);
+        assertEquals(0, nickelback.getOffset());
+        assertEquals(10, nickelback.getLength());
+        assertEquals(memory, nickelback.getMemory());
 
-        assertEquals(photograph.getOffset(), 10);
-        assertEquals(photograph.getLength(), 10);
+        assertEquals(10, photograph.getOffset());
+        assertEquals(10, photograph.getLength());
 
-        assertEquals(rockstar.getOffset(), 20);
-        assertEquals(rockstar.getLength(), 8);
+        assertEquals(20, rockstar.getOffset());
+        assertEquals(8, rockstar.getLength());
 
-        assertEquals(savinMe.getOffset(), 28);
-        assertEquals(savinMe.getLength(), 9);
+        assertEquals(28, savinMe.getOffset());
+        assertEquals(9, savinMe.getLength());
 
-        assertEquals(howYouRemindMe.getOffset(), 37);
-        assertEquals(howYouRemindMe.getLength(), 17);
+        assertEquals(37, howYouRemindMe.getOffset());
+        assertEquals(17, howYouRemindMe.getLength());
 
-        assertEquals(farAway.getOffset(), 54);
-        assertEquals(farAway.getLength(), 8);
+        assertEquals(54, farAway.getOffset());
+        assertEquals(8, farAway.getLength());
 
-        assertEquals(animals.getOffset(), 62);
-        assertEquals(animals.getLength(), 7);
+        assertEquals(62, animals.getOffset());
+        assertEquals(7, animals.getLength());
     }
 
     /**
@@ -108,37 +109,37 @@ public class HandleTest extends TestCase {
         nickelback.setLength(-1);
         nickelback.setOffset(-1);
         nickelback.setMemory(emptyArr);
-        assertEquals(nickelback.getOffset(), -1);
-        assertEquals(nickelback.getLength(), -1);
-        assertEquals(nickelback.getMemory(), emptyArr);
+        assertEquals(-1, nickelback.getOffset());
+        assertEquals(-1, nickelback.getLength());
+        assertEquals(emptyArr, nickelback.getMemory());
 
         photograph.setLength(-1);
         photograph.setOffset(-1);
         photograph.setMemory(emptyArr);
-        assertEquals(photograph.getOffset(), -1);
-        assertEquals(photograph.getLength(), -1);
-        assertEquals(photograph.getMemory(), emptyArr);
+        assertEquals(-1, photograph.getOffset());
+        assertEquals(-1, photograph.getLength());
+        assertEquals(emptyArr, photograph.getMemory());
 
         rockstar.setLength(-1);
         rockstar.setOffset(-1);
         rockstar.setMemory(emptyArr);
-        assertEquals(rockstar.getOffset(), -1);
-        assertEquals(rockstar.getLength(), -1);
-        assertEquals(rockstar.getMemory(), emptyArr);
+        assertEquals(-1, rockstar.getOffset());
+        assertEquals(-1, rockstar.getLength());
+        assertEquals(emptyArr, rockstar.getMemory());
 
         savinMe.setLength(-1);
         savinMe.setOffset(-1);
         savinMe.setMemory(emptyArr);
-        assertEquals(savinMe.getOffset(), -1);
-        assertEquals(savinMe.getLength(), -1);
-        assertEquals(savinMe.getMemory(), emptyArr);
+        assertEquals(-1, savinMe.getOffset());
+        assertEquals(-1, savinMe.getLength());
+        assertEquals(emptyArr, savinMe.getMemory());
 
         howYouRemindMe.setOffset(-1);
         howYouRemindMe.setLength(-1);
         howYouRemindMe.setMemory(emptyArr);
-        assertEquals(howYouRemindMe.getOffset(), -1);
-        assertEquals(howYouRemindMe.getLength(), -1);
-        assertEquals(howYouRemindMe.getMemory(), emptyArr);
+        assertEquals(-1, howYouRemindMe.getOffset());
+        assertEquals(-1, howYouRemindMe.getLength());
+        assertEquals(emptyArr, howYouRemindMe.getMemory());
     }
 
     /**
@@ -146,14 +147,13 @@ public class HandleTest extends TestCase {
      * data pointed to by each handle
      */
     public void testGetStringAt() {
-        assertEquals(nickelback.getStringAt(), "Nickelback");
-        assertEquals(photograph.getStringAt(), "Photograph");
-        assertEquals(rockstar.getStringAt(), "Rockstar");
-        assertEquals(savinMe.getStringAt(), "Savin' Me");
-        assertEquals(howYouRemindMe.getStringAt(),
-                "How You Remind Me");
-        assertEquals(farAway.getStringAt(), "Far Away");
-        assertEquals(animals.getStringAt(), "Animals");
+        assertEquals("Nickelback", nickelback.getStringAt());
+        assertEquals("Photograph", photograph.getStringAt());
+        assertEquals("Rockstar", rockstar.getStringAt());
+        assertEquals("Savin' Me", savinMe.getStringAt());
+        assertEquals("How You Remind Me", howYouRemindMe.getStringAt());
+        assertEquals("Far Away", farAway.getStringAt());
+        assertEquals("Animals", animals.getStringAt());
     }
 
     /**
@@ -177,15 +177,15 @@ public class HandleTest extends TestCase {
      */
     public void testEquals() {
         Handle nullHandle = null;
-        assertNotEquals(animals, nullHandle);
+        assertNotEquals(nullHandle, animals);
 
         Integer notHandle = 1;
-        assertNotEquals(animals, notHandle);
+        assertNotEquals(notHandle, animals);
 
         Handle animalsCopy = new Handle(memory, 62, 7);
-        assertEquals(animals, animalsCopy);
+        assertEquals(animalsCopy, animals);
 
-        assertNotEquals(animals, howYouRemindMe);
+        assertNotEquals(howYouRemindMe, animals);
     }
 
     /**
@@ -193,16 +193,12 @@ public class HandleTest extends TestCase {
      * and lengths
      */
     public void testToString() {
-        assertEquals(nickelback.toString(),
-                "(offset: 0, len: 10)");
-        assertEquals(photograph.toString(),
-                "(offset: 10, len: 10)");
-        assertEquals(rockstar.toString(),
-                "(offset: 20, len: 8)");
-        assertEquals(savinMe.toString(), "(offset: 28, len: 9)");
-        assertEquals(howYouRemindMe.toString(),
-                "(offset: 37, len: 17)");
-        assertEquals(farAway.toString(), "(offset: 54, len: 8)");
-        assertEquals(animals.toString(), "(offset: 62, len: 7)");
+        assertEquals("(offset: 0, len: 10)", nickelback.toString());
+        assertEquals("(offset: 10, len: 10)", photograph.toString());
+        assertEquals("(offset: 20, len: 8)", rockstar.toString());
+        assertEquals("(offset: 28, len: 9)", savinMe.toString());
+        assertEquals("(offset: 37, len: 17)", howYouRemindMe.toString());
+        assertEquals("(offset: 54, len: 8)", farAway.toString());
+        assertEquals("(offset: 62, len: 7)", animals.toString());
     } // end testToString
 } // end HandleTest

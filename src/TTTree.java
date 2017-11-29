@@ -146,4 +146,11 @@ public class TTTree<Key extends Comparable<? super Key>> {
     public boolean isEmpty() {
         return root == null;
     } // end isEmpty
+    
+    public String printInOrder() {
+        if (this.isEmpty()) {
+            return "empty...";
+        }
+        return root.printInOrder();
+    }
 } // end TTTree

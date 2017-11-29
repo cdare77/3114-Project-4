@@ -270,4 +270,27 @@ public class TTTreeTest extends TestCase {
         assertTrue(tree.isEmpty());
         assertEquals(tree.size(), 0);
     }
+    
+    @Test
+    public void testPrintInOrder() {
+        tree.insert(new KVPair<Integer, Integer>(10, 10));
+        tree.insert(new KVPair<Integer, Integer>(20, 10));
+        tree.insert(new KVPair<Integer, Integer>(15, 10));
+        tree.insert(new KVPair<Integer, Integer>(16, 16));
+        tree.insert(new KVPair<Integer, Integer>(17, 1));
+        tree.insert(new KVPair<Integer, Integer>(5, 1));
+        tree.insert(new KVPair<Integer, Integer>(25, 1));
+        tree.insert(new KVPair<Integer, Integer>(16, 16));
+        tree.insert(new KVPair<Integer, Integer>(2, 2));
+        tree.insert(new KVPair<Integer, Integer>(30, 30));
+        tree.insert(new KVPair<Integer, Integer>(6, 4));
+        tree.insert(new KVPair<Integer, Integer>(4, 4));
+        tree.insert(new KVPair<Integer, Integer>(7, 7));
+        tree.insert(new KVPair<Integer, Integer>(6, 6));
+        tree.insert(new KVPair<Integer, Integer>(21, 21));
+        tree.insert(new KVPair<Integer, Integer>(40, 40));
+        tree.insert(new KVPair<Integer, Integer>(35, 35));
+        
+        System.out.println(tree.printInOrder());
+    }
 } // TTTreeTest

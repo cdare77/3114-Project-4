@@ -466,6 +466,7 @@ public class TTNode<Key extends Comparable<? super Key>> {
                 right = center;
                 lkey = node.lkey();
                 center = node.centerChild();
+                left = node.leftChild();
             }
             return this;
         } // end else

@@ -127,7 +127,8 @@ public class Handle implements Comparable<Handle> {
     
     @Override
     public String toString() {
-        return String.format("(offset: %d, len: %d)", offset, length);
+//        return String.format("(offset: %d, len: %d)", offset, length);
+        return this.getStringAt();
     }
 
 } // end Handle class

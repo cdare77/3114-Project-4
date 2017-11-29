@@ -40,7 +40,7 @@ public class TTTreeTest extends TestCase {
         tree.insert(new KVPair<Integer, Integer>(5, 1));
         tree.insert(new KVPair<Integer, Integer>(25, 1));
         tree.insert(new KVPair<Integer, Integer>(16, 16));
-
+        System.out.print(tree);
         assertEquals(tree.toString(), "[(15, 10), (17, 1)] \n" +
                 "[(5, 1), (10, 10)] [(16, 16), (16, 16)] [(20, 10),"
                 + " (25, 1)] \n");

@@ -97,10 +97,11 @@ public class Handle implements Comparable<Handle> {
 
     @Override
     public int compareTo(Handle other) {
-        String thisName = this.getStringAt();
-        String otherName = other.getStringAt();
-
-        return thisName.compareTo(otherName);
+//        String thisName = this.getStringAt();
+//        String otherName = other.getStringAt();
+//
+//        return thisName.compareTo(otherName);
+        return this.getOffset() - other.getOffset();
     }
 
     @Override
@@ -127,8 +128,8 @@ public class Handle implements Comparable<Handle> {
     
     @Override
     public String toString() {
-//        return String.format("(offset: %d, len: %d)", offset, length);
-        return this.getStringAt();
+        return String.format("%d", offset);
+//        return this.getStringAt();
     }
 
 } // end Handle class

@@ -1,3 +1,4 @@
+
 // On my honor:
 //
 // - I have not used source code obtained from another student,
@@ -52,8 +53,7 @@ public class SongSearch {
     private static DynamicByteArray memory;
     private static HashTable artistTable;
     private static HashTable songTable;
-    private static TTTree<KVPair<Handle, Handle>> artistTree;
-    private static TTTree<KVPair<Handle, Handle>> songTree;
+    private static TTTree<KVPair<Handle, Handle>> tree;
 
     /*
      * Used in range searches for one particular artist. Low
@@ -62,15 +62,15 @@ public class SongSearch {
      * instances matching a particular artist name. For example,
      * 
      * tree.rangeSearch(new KVPair<Handle, Handle>(artist,
-     * LOW_STRING), new KVPair<Handle, Handle>(artist,
-     * HIGH_STRING))
+     * LOW_HANDLE), new KVPair<Handle, Handle>(artist,
+     * HIGH_HANDLE))
      * 
      * returns all KVPairs with Key value artist.
      */
-    private static final Handle LOW_STRING =
-            new Handle("".getBytes(), 0, 0);
-    private static final Handle HIGH_STRING =
-            new Handle("~~~~~~~~~~~~~~~~~".getBytes(), 0, 17);
+    private static final Handle LOW_HANDLE =
+            new Handle("".getBytes(), -10, 0);
+    private static final Handle HIGH_HANDLE =
+            new Handle("".getBytes(), Integer.MAX_VALUE, 0);
 
     // ------------------- PUBLIC METHODS ----------------------
 
@@ -108,9 +108,8 @@ public class SongSearch {
         memory = new DynamicByteArray(blockSize, artistTable,
                 songTable);
 
-        // Create our 2-3+ trees
-        artistTree = new TTTree<KVPair<Handle, Handle>>();
-        songTree = new TTTree<KVPair<Handle, Handle>>();
+        // Create our 2-3+ tree
+        tree = new TTTree<KVPair<Handle, Handle>>();
 
         parseCommandFile();
     } // end main()
@@ -173,23 +172,70 @@ public class SongSearch {
         // Parse the next String as the concatenation
         // of our artist and song separated by delimiter <SEP>
         String toInsert = scan.nextLine().substring(1);
-        String[] artistSong = toInsert.split("<SEP>");
+        String[] artistSongString = toInsert.split("<SEP>");
 
-        if (artistSong[1].equals("Breath")) {
-            System.out.print("");
+        Handle artist;
+        Handle song;
+
+        artist = artistTable.search(artistSongString[0]);
+        song = songTable.search(artistSongString[1]);
+
+        if (artist == null) {
+            artist = memory.insert(artistSongString[0], true);
+            System.out.printf(
+                    "|%s| is added to the Artist database.\n",
+                    artistSongString[0]);
         }
-
-        // Create references in memory to both artist and
-        // song. The functionality of DynamicByteArray prevents
-        // us from inserting duplicates, but instead returns
-        // a reference to the Handle
-        Handle artist = memory.insert(artistSong[0], true);
-        Handle song = memory.insert(artistSong[1], false);
-
-        artistTree.insert(new KVPair<Handle, Handle>(
-                artist, song));
-        songTree.insert(new KVPair<Handle, Handle>(
-                song, artist));
+        else {
+            System.out.printf(
+                    "|%s| duplicates a record already in the"
+                            + " Artist database.\n",
+                    artistSongString[0]);
+        }
+        if (song == null) {
+            song = memory.insert(artistSongString[1], false);
+            System.out.printf(
+                    "|%s| is added to the Song database.\n",
+                    artistSongString[1]);
+        }
+        else {
+            System.out.printf(
+                    "|%s| duplicates a record already in the"
+                            + " Song database.\n",
+                    artistSongString[1]);
+        }
+        
+        KVPair<Handle, Handle> artistSong = new KVPair<Handle, Handle>(artist, song);
+        KVPair<Handle, Handle> songArtist = new KVPair<Handle, Handle>(song, artist);
+        
+        if (tree.search(artistSong) == null) {
+            // insert into tree
+            tree.insert(artistSong);
+            tree.insert(songArtist);
+            System.out.printf(
+                    "The KVPair (|%s|,|%s|),(%d,%d) is added to"
+                    + " the tree.\n",
+                    artist.getStringAt(), song.getStringAt(),
+                    artist.getOffset(), song.getOffset());
+            System.out.printf(
+                    "The KVPair (|%s|,|%s|),(%d,%d) is added to"
+                    + " the tree.\n",
+                    song.getStringAt(), artist.getStringAt(),
+                    song.getOffset(), artist.getOffset());
+        }
+        else {
+            // duplicate artist-song pair; do not insert.
+            System.out.printf(
+                    "The KVPair (|%s|,|%s|),(%d,%d) duplicates a"
+                    + " record already in the tree.\n",
+                    artist.getStringAt(), song.getStringAt(),
+                    artist.getOffset(), song.getOffset());
+            System.out.printf(
+                    "The KVPair (|%s|,|%s|),(%d,%d) duplicates a"
+                    + " record already in the tree.\n",
+                    song.getStringAt(), artist.getStringAt(),
+                    song.getOffset(), artist.getOffset());
+        } // end else
     } // end parseInsert
 
     /**
@@ -217,14 +263,17 @@ public class SongSearch {
             Handle artistHandle = artistTable.search(name);
 
             if (artistHandle == null) {
-                // TODO artist not in table
+                // artist not in artistTable
+                System.out.printf(
+                        "|%s| does not exist in the artist database.",
+                        name);
                 return;
             }
 
             // get a list of all song-artist pairs with
             // artist name "name"
             List<KVPair<Handle, Handle>> byThisArtist =
-                    allWithKey(artistHandle, true);
+                    allWithKey(artistHandle);
             // used to check how many artists each song is
             // linked to
             List<KVPair<Handle, Handle>> hasThisSong;
@@ -239,13 +288,13 @@ public class SongSearch {
                 songHandle = pair.getValue();
 
                 // remove the pair from both trees
-                artistTree.remove(pair);
-                songTree.remove(new KVPair<Handle, Handle>(
+                tree.remove(pair);
+                tree.remove(new KVPair<Handle, Handle>(
                         songHandle, artistHandle));
 
                 // Check if there are no other artists
                 // connected to this song
-                hasThisSong = allWithKey(songHandle, false);
+                hasThisSong = allWithKey(songHandle);
 
                 if (hasThisSong.size() == 0) {
                     // there are no other artists connected
@@ -263,13 +312,16 @@ public class SongSearch {
             Handle songHandle = songTable.search(name);
 
             if (songHandle == null) {
-                // TODO song not in table
+                // song not in songTable
+                System.out.printf(
+                        "|%s| does not exist in the song database.",
+                        name);
                 return;
             }
             // get a list of all song-artist with songname
             // "name"
             List<KVPair<Handle, Handle>> hasThisSong =
-                    allWithKey(songHandle, false);
+                    allWithKey(songHandle);
             // used to check how many songs each artist is
             // linked to
             List<KVPair<Handle, Handle>> byThisArtist;
@@ -282,8 +334,8 @@ public class SongSearch {
                 // current artist
                 artistHandle = pair.getValue();
                 // remove the pair from both trees
-                songTree.remove(pair);
-                artistTree.remove(new KVPair<Handle, Handle>(
+                tree.remove(pair);
+                tree.remove(new KVPair<Handle, Handle>(
                         artistHandle, songHandle));
 
                 // check if we can remove artist from memory
@@ -291,7 +343,7 @@ public class SongSearch {
                 // song-artist pair, we need to see if this
                 // artist pops up again
                 byThisArtist =
-                        allWithKey(artistHandle, true);
+                        allWithKey(artistHandle);
 
                 if (byThisArtist.size() == 0) {
                     // if there are no more songs tied to
@@ -331,16 +383,20 @@ public class SongSearch {
 
         if (argument.contains("artist")) {
             // called print artist
-            System.out.println(artistTable);
+            System.out.print(artistTable);
+            System.out.printf("total artists: %d\n",
+                    artistTable.size());
         }
         else if (argument.contains("song")) {
             // called print song
-            System.out.println(songTable);
+            System.out.print(songTable);
+            System.out.printf("total songs: %d\n",
+                    songTable.size());
         }
         else {
             // only thing left is print tree
-            System.out.println(artistTree);
-            System.out.println(songTree);
+            System.out.println("Printing 2-3 tree:");
+            System.out.print(tree);
         }
     } // end parsePrint
 
@@ -359,33 +415,37 @@ public class SongSearch {
     private static void parseList(Scanner scan) {
         String argument = scan.next();
         String name = scan.nextLine().substring(1);
-
+        Handle toList;
         List<KVPair<Handle, Handle>> list;
 
         if (argument.contains("artist")) {
             // current argument specifies artist
-            Handle artistHandle = artistTable.search(name);
-            if (artistHandle == null) {
-                // TODO artist not in table
+            toList = artistTable.search(name);
+            if (toList == null) {
+                // artist not in hash table
+                System.out.printf(
+                        "|%s| does not exist in the artist database.",
+                        name);
                 return;
             }
-            // get all songs by this artist
-            list = allWithKey(artistHandle, true);
-            // print list of songs
-            System.out.println(list);
         }
         else {
             // current argument specifies song
-            Handle songHandle = songTable.search(name);
-            if (songHandle == null) {
-                // TODO song not in table
+            toList = songTable.search(name);
+            if (toList == null) {
+                // song not in hash table
+                System.out.printf(
+                        "|%s| does not exist in the song database.",
+                        name);
                 return;
             }
-            // get all artists having a song with this name
-            list = allWithKey(songHandle, false);
-            // print list of artists
-            System.out.println(list);
         } // end else
+        list = allWithKey(toList);
+
+        for (KVPair<Handle, Handle> pair : list) {
+            System.out.printf("|%s|\n",
+                    pair.getValue().getStringAt());
+        }
     } // end parseList
 
     /**
@@ -416,27 +476,43 @@ public class SongSearch {
 
         Handle artistHandle = artistTable.search(artistSong[0]);
         Handle songHandle = songTable.search(artistSong[1]);
-
-        if (artistHandle == null || songHandle == null) {
-            // TODO either invalid artist or invalid song
+        
+        // Check to make sure song-artist pair exist. If not, report
+        // and exit
+        boolean invalidCall = false;
+        if (artistHandle == null) {
+            // artist not in artist hash table
+            System.out.printf(
+                    "|%s| does not exist in the artist database.\n",
+                    artistSong[0]);
+            invalidCall = true;
+        }
+        if (songHandle == null) {
+            // song not in song hash table
+            System.out.printf(
+                    "|%s| does not exist in the song database.\n",
+                    artistSong[1]);
+            invalidCall = true;
+        }
+        
+        if (invalidCall) {
             return;
         }
 
         // remove this specific combination from both
         // trees
-        artistTree.remove(new KVPair<Handle, Handle>(
-                artistHandle, songHandle));
-        songTree.remove(
-                new KVPair<Handle, Handle>(songHandle,
-                        artistHandle));
+        tree.remove(new KVPair<Handle, Handle>(artistHandle,
+                songHandle));
+        tree.remove(new KVPair<Handle, Handle>(songHandle,
+                artistHandle));
 
         // likely does not have any worse efficiency than
         // O(log n) unless this artist or song takes up a
         // significant portion of the table
         int thisSongLeft =
-                allWithKey(songHandle, false).size();
+                allWithKey(songHandle).size();
         int thisArtistLeft =
-                allWithKey(artistHandle, true).size();
+                allWithKey(artistHandle).size();
 
         if (thisSongLeft == 0) {
             // there are no more instances of this song
@@ -462,34 +538,14 @@ public class SongSearch {
      *            this will return all songs by artist. If a song
      *            handle, this will return all artists with this
      *            song
-     * @param keyIsArtist
-     *            -- flag which tells us whether handle points to
-     *            an artist or song
      * @return list of all song-artist pairs matching artist/song
      *         in handle
      */
     private static List<KVPair<Handle, Handle>> allWithKey(
-            Handle handle, boolean keyIsArtist) {
+            Handle handle) {
 
-        if (keyIsArtist) {
-            // handle points to an artist, thus we call
-            // rangeSearch
-            // on our artist tree to get all songs by this artist
-            return artistTree.rangeSearch(
-                    new KVPair<Handle, Handle>(handle,
-                            LOW_STRING),
-                    new KVPair<Handle, Handle>(handle,
-                            HIGH_STRING));
-        }
-        else {
-            // handle points to a song, thus we call rangeSearch
-            // on our song tree to get all artists with a
-            // songname pointed to by handle
-            return songTree.rangeSearch(
-                    new KVPair<Handle, Handle>(handle,
-                            LOW_STRING),
-                    new KVPair<Handle, Handle>(handle,
-                            HIGH_STRING));
-        } // end else
+        return tree.rangeSearch(
+                new KVPair<Handle, Handle>(handle, LOW_HANDLE),
+                new KVPair<Handle, Handle>(handle, HIGH_HANDLE));
     } // end allWithKey
 } // end SongSearch

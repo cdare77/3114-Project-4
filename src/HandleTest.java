@@ -164,9 +164,9 @@ public class HandleTest extends TestCase {
         assertTrue(nickelback.compareTo(photograph) < 0);
         assertTrue(photograph.compareTo(rockstar) < 0);
         assertTrue(rockstar.compareTo(savinMe) < 0);
-        assertTrue(savinMe.compareTo(howYouRemindMe) > 0);
-        assertTrue(howYouRemindMe.compareTo(farAway) > 0);
-        assertTrue(farAway.compareTo(animals) > 0);
+        assertTrue(savinMe.compareTo(howYouRemindMe) < 0);
+        assertTrue(howYouRemindMe.compareTo(farAway) < 0);
+        assertTrue(farAway.compareTo(animals) < 0);
     }
 
     /**
@@ -193,12 +193,12 @@ public class HandleTest extends TestCase {
      * and lengths
      */
     public void testToString() {
-        assertEquals("(offset: 0, len: 10)", nickelback.toString());
-        assertEquals("(offset: 10, len: 10)", photograph.toString());
-        assertEquals("(offset: 20, len: 8)", rockstar.toString());
-        assertEquals("(offset: 28, len: 9)", savinMe.toString());
-        assertEquals("(offset: 37, len: 17)", howYouRemindMe.toString());
-        assertEquals("(offset: 54, len: 8)", farAway.toString());
-        assertEquals("(offset: 62, len: 7)", animals.toString());
+        assertEquals("0", nickelback.toString());
+        assertEquals("10", photograph.toString());
+        assertEquals("20", rockstar.toString());
+        assertEquals("28", savinMe.toString());
+        assertEquals("37", howYouRemindMe.toString());
+        assertEquals("54", farAway.toString());
+        assertEquals("62", animals.toString());
     } // end testToString
 } // end HandleTest

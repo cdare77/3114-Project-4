@@ -15,7 +15,7 @@ public class DynamicByteArrayTest extends TestCase {
 
     // ---------------- PRIVATE VARIABLES ----------------
 
-    private DynamicByteArray memory; 
+    private DynamicByteArray memory;
     private HashTable artistTable;
     private HashTable songTable;
 
@@ -42,7 +42,8 @@ public class DynamicByteArrayTest extends TestCase {
         memory.insert("Nickelback", true);
         memory.insert("Photograph", false);
         memory.insert("Nickelback", true);
-        // unsuccessful quadratic probe
+        // unsuccessful quadratic probe on
+        // nickelback forces hash to expand
         memory.insert("How You Remind Me", false);
         memory.insert("Nickelback", true);
         memory.insert("Photograph", false);
@@ -54,18 +55,23 @@ public class DynamicByteArrayTest extends TestCase {
         memory.insert("Shadow of the Day", false);
 
         assertEquals(
-                "[Nickelback, Animals, Savin' Me, Photograph,"
-                        + " Rockstar, Linkin Park, Numb, Shadow"
-                        + " of the Day]",
+                "[Nickelback, Animals, Savin' Me, Photograph, "
+                        + "How You Remind Me, Rockstar, Linkin"
+                        + " Park, Numb, Shadow of the Day]",
                 memory.toString());
 
         // examine hash tables
-        assertEquals("Nickelback @ 6, Linkin Park @ 7\n" +
-                "Number of elements: 2", artistTable.toString());
+        assertEquals("|Nickelback| 6\n" +
+                "|Linkin Park| 7\n",
+                artistTable.toString());
         assertEquals(
-                "Animals @ 2, Rockstar @ 5, Savin' Me @ 6, "
-                        + "Shadow of the Day @ 7, Numb @ 14,"
-                        + " Photograph @ 15\nNumber of elements: 6",
+                "|Animals| 2\n" +
+                        "|Rockstar| 5\n" +
+                        "|Savin' Me| 6\n" +
+                        "|How You Remind Me| 7\n" +
+                        "|Shadow of the Day| 10\n" +
+                        "|Numb| 14\n" +
+                        "|Photograph| 15\n",
                 songTable.toString());
     }
 
@@ -98,17 +104,21 @@ public class DynamicByteArrayTest extends TestCase {
         memory.delete(numb, false);
 
         assertEquals(
-                "[Animals, Savin' Me, Photograph, Rockstar,"
-                        + " Linkin Park, Shadow of the Day]",
+                "[Animals, Savin' Me, Photograph, How You Remind"
+                        + " Me, Rockstar, Linkin Park, Shadow of"
+                        + " the Day]",
                 memory.toString());
 
         // examine hash tables
-        assertEquals("Linkin Park @ 7\n" +
-                "Number of elements: 1", artistTable.toString());
+        assertEquals("|Linkin Park| 7\n",
+                artistTable.toString());
         assertEquals(
-                "Animals @ 2, Rockstar @ 5, Savin' Me @ 6, Shadow"
-                        + " of the Day @ 7, Photograph @ 15\nNumber"
-                        + " of elements: 5",
+                "|Animals| 2\n" +
+                        "|Rockstar| 5\n" +
+                        "|Savin' Me| 6\n" +
+                        "|How You Remind Me| 7\n" +
+                        "|Shadow of the Day| 10\n" +
+                        "|Photograph| 15\n",
                 songTable.toString());
     }
 
@@ -130,7 +140,8 @@ public class DynamicByteArrayTest extends TestCase {
         memory.insert("How You Remind Me", false);
 
         assertEquals(
-                "[Nickelback, Animals, Savin' Me, Photograph]",
+                "[Nickelback, Animals, Savin' Me, Photograph,"
+                        + " How You Remind Me]",
                 memory.toString());
     } // end testToString
 } // end DynamicByteArrayTest

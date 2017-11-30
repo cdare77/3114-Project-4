@@ -88,9 +88,27 @@ public class TTTree<Key extends Comparable<? super Key>> {
     }
 
     /**
+     * Simply call our searchHelper method from the root to
+     * ensure entire tree is traversed
+     * 
+     * @param toFind
+     *            -- key we wish to search for
+     * @return reference to key if in tree, null otherwise
+     */
+    public Key search(Key toFind) {
+        if (this.isEmpty()) {
+            return null;
+        }
+        return root.searchHelper(toFind);
+    }
+
+    /**
      * Inclusively searches the tree given a range of keys.
-     * @param low - the low key
-     * @param high - the high key
+     * 
+     * @param low
+     *            - the low key
+     * @param high
+     *            - the high key
      * @return A list of the matching tree keys.
      */
     public List<Key> rangeSearch(Key low, Key high) {
@@ -124,16 +142,16 @@ public class TTTree<Key extends Comparable<? super Key>> {
     } // end size()
 
     /**
-     * Gets the String representation of this tree. 
+     * Gets the String representation of this tree.
      * 
-     * @return A String. 
+     * @return A String.
      */
     @Override
     public String toString() {
         if (this.isEmpty()) {
             return "";
         }
-        return root.printDepthFirst();
+        return root.printPreOrder(0);
     }
 
     /**
@@ -153,11 +171,5 @@ public class TTTree<Key extends Comparable<? super Key>> {
     public boolean isEmpty() {
         return root == null;
     } // end isEmpty
-    
-    public String printInOrder() {
-        if (this.isEmpty()) {
-            return "empty...";
-        }
-        return root.printInOrder();
-    }
+
 } // end TTTree

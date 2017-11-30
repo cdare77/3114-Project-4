@@ -23,7 +23,7 @@ public class HashTableTest extends TestCase {
     private Handle animals;
 
     // ---------------- PUBLIC METHODS -------------------
-    
+
     /**
      * Sets up the test fixture.
      */
@@ -77,25 +77,37 @@ public class HashTableTest extends TestCase {
      */
     public void testInsert() {
         assertEquals(0, table.size());
-        assertTrue(table.insert(animals));
-        assertTrue(table.insert(farAway));
-        assertTrue(table.insert(howYouRemindMe));
+        table.insert(animals);
+        table.insert(farAway);
+        table.insert(howYouRemindMe);
 
-        // Quadratic probing leads to endless loop
-        // of taken spots
-        assertFalse(table.insert(nickelback));
-        assertTrue(table.insert(photograph));
-        assertTrue(table.insert(rockstar));
-        assertTrue(table.insert(savinMe));
+        assertEquals(
+                "|Animals| 2\n" +
+                        "|How You Remind Me| 6\n" +
+                        "|Far Away| 7\n",
+                table.toString());
+
+        // Force an unsuccessful quadratic probe
+        table.insert(nickelback);
+        table.insert(photograph);
+        table.insert(rockstar);
+        table.insert(savinMe);
 
         // insert a duplicate into the table
-        assertTrue(table.insert(farAway));
+        table.insert(farAway);
 
-        assertEquals(table.toString(),
-                "Animals @ 2, Rockstar @ 5, How You Remind Me @ 6, "
-                        + "Far Away @ 7, Far Away @ 8, Savin' Me @ 10,"
-                        + " Photograph @ 15\nNumber of elements: 7");
+        assertEquals(
+                "|Animals| 2\n" +
+                        "|Rockstar| 5\n" +
+                        "|How You Remind Me| 6\n" +
+                        "|Far Away| 7\n" +
+                        "|Far Away| 8\n" +
+                        "|Savin' Me| 10\n" +
+                        "|Photograph| 15\n" +
+                        "|Nickelback| 22\n",
+                table.toString());
 
+        // start with a new table
         table.clear();
 
         table.insert(rockstar);
@@ -110,11 +122,16 @@ public class HashTableTest extends TestCase {
         table.delete(savinMe);
         // insert over a tombstone
         table.insert(nickelback);
-        assertEquals("Photograph @ 0, Animals @ 2, Rockstar @ 5, Nickelback"
-                        + " @ 6, Far Away @ 7, How You Remind Me @ 10,"
-                        + " Nickelback @ 15\nNumber of elements: 7",
-                        table.toString());
 
+        assertEquals(
+                "|Photograph| 0\n" +
+                        "|Animals| 2\n" +
+                        "|Rockstar| 5\n" +
+                        "|Nickelback| 6\n" +
+                        "|Far Away| 7\n" +
+                        "|How You Remind Me| 10\n" +
+                        "|Nickelback| 15\n",
+                table.toString());
     } // endTestInsert
 
     /**
@@ -135,7 +152,8 @@ public class HashTableTest extends TestCase {
 
         // Make sure all elements appear in a search
         assertEquals(nickelback, table.search("Nickelback"));
-        assertEquals(howYouRemindMe, table.search("How You Remind Me"));
+        assertEquals(howYouRemindMe,
+                table.search("How You Remind Me"));
         assertEquals(photograph, table.search("Photograph"));
         assertEquals(rockstar, table.search("Rockstar"));
         assertEquals(farAway, table.search("Far Away"));
@@ -161,12 +179,20 @@ public class HashTableTest extends TestCase {
         table.insert(animals);
 
         assertEquals(4, table.size());
-        assertEquals("Nickelback @ 2, Animals @ 3, Savin' Me @ 6," +
-                        " Far Away @ 7\nNumber of elements: 4",
-                        table.toString());
+        assertEquals(
+                "|Nickelback| 2\n" +
+                        "|Animals| 3\n" +
+                        "|Savin' Me| 6\n" +
+                        "|Far Away| 7\n",
+                table.toString());
         assertEquals(nickelback, table.delete(nickelback));
-        assertEquals("Animals @ 3, Savin' Me @ 6, Far Away @ 7\n" +
-                        "Number of elements: 3", table.toString());
+        assertEquals(
+                "|Animals| 3\n" +
+                        "|Savin' Me| 6\n" +
+                        "|Far Away| 7\n",
+                table.toString());
+
+        assertEquals(3, table.size());
 
         // test removing an element not in table
         assertNull(table.delete(nickelback));
@@ -177,7 +203,8 @@ public class HashTableTest extends TestCase {
      * nonempty table
      */
     public void testToString() {
-        assertEquals("\n" + "Number of elements: 0", table.toString());
+        assertEquals("",
+                table.toString());
 
         table.insert(nickelback);
         table.insert(savinMe);
@@ -186,10 +213,15 @@ public class HashTableTest extends TestCase {
         table.insert(howYouRemindMe);
         table.insert(photograph);
         table.insert(rockstar);
-        assertEquals("Photograph @ 0, Animals @ 2, Rockstar @ 5,"
-                        + " Nickelback @ 6, Far Away @ 7, Savin'"
-                        + " Me @ 10, How You Remind Me @ 15\nNumber"
-                        + " of elements: 7", table.toString());
+
+        assertEquals("|Photograph| 0\n" +
+                "|Animals| 2\n" +
+                "|Rockstar| 5\n" +
+                "|Nickelback| 6\n" +
+                "|Far Away| 7\n" +
+                "|Savin' Me| 10\n" +
+                "|How You Remind Me| 15\n",
+                table.toString());
 
     }
 
@@ -208,6 +240,6 @@ public class HashTableTest extends TestCase {
 
         table.clear();
         assertEquals(0, table.size());
-        assertEquals("\n" + "Number of elements: 0", table.toString());
+        assertEquals("", table.toString());
     }
 } // end HashTableTest

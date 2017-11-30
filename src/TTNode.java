@@ -165,8 +165,8 @@ public class TTNode<Key extends Comparable<? super Key>> {
     }
 
     /**
-     * Helper method which inserts a key-value pair into the root
-     * of the specified sub-tree
+     * Recursive helper method which inserts a key-value pair
+     * into the root of the specified sub-tree
      * 
      * @param root
      *            -- root of specified subtree
@@ -329,8 +329,46 @@ public class TTNode<Key extends Comparable<? super Key>> {
     } // end height()
 
     /**
-     * Private recursive helper method which traverses the tree
-     * and returns all keys within the range of lower and higher
+     * Recursive helper method which allows us to search for a
+     * single given key in the tree. If the desired key is not in
+     * the tree, we return a null reference.
+     * 
+     * @param toFind
+     *            -- key to search tree for
+     * @return reference to key if found, null otherwise
+     */
+    public Key searchHelper(Key toFind) {
+        // First check if the key is in this
+        // current node
+        if (toFind.compareTo(lkey) == 0) {
+            return lkey;
+        }
+        else if (rkey != null && toFind.compareTo(rkey) == 0) {
+            return rkey;
+        }
+
+        // key is not in this node, check elsewhere
+        if (this.isLeaf()) {
+            // toFind is not in tree
+            return null;
+        }
+        else if (toFind.compareTo(lkey) < 0) {
+            // search left
+            return left.searchHelper(toFind);
+        }
+        else if (rkey == null || toFind.compareTo(rkey) < 0) {
+            // search center
+            return center.searchHelper(toFind);
+        }
+        else {
+            // search right
+            return right.searchHelper(toFind);
+        } // end else
+    } // end searchHelper()
+
+    /**
+     * Recursive helper method which traverses the tree and
+     * returns all keys within the range of lower and higher
      * (inclusive)
      * 
      * @param lower
@@ -393,51 +431,43 @@ public class TTNode<Key extends Comparable<? super Key>> {
     } // end findRangeHelper
 
     /**
-     * Uses a StringBuilder to compose a string representation of
-     * the current subtree in a depth-first visualisation (the
-     * way most people view trees with root on top)
+     * Prints the subtree along a preorder traversal
      * 
-     * @return string representation of subtree
-     */
-    public String printDepthFirst() {
-        StringBuilder builder = new StringBuilder();
-        int h = this.height();
-
-        // print each level of the tree in order
-        for (int i = 1; i <= h; i++) {
-            this.printGivenLevel(builder, i);
-            builder.append("\n");
-        }
-        return builder.toString();
-    }
-    
-    /**
-     * Prints the node in order.
      * @return string representation of the subtree
      */
-    public String printInOrder() {
+    public String printPreOrder(int level) {
         StringBuilder builder = new StringBuilder();
-        // Print out everything in order; there are no children
-        if (this.isLeaf()) {
-            builder.append(lkey);
-            if (rkey != null) {
-                builder.append(rkey);
-            }
-            return builder.toString();
+        
+        // Print 2 * level characters of whitespace
+        for (int i = 0; i < 2*level; i++) {
+            builder.append(" ");
         }
-        builder.append(left.printInOrder());
+
+        // print left key
         builder.append(lkey);
-        builder.append(center.printInOrder());
-        if (right != null) {
+        if (rkey != null) {
+            // print right key
+            builder.append(" ");
             builder.append(rkey);
-            builder.append(right.printInOrder());
+        }
+        builder.append("\n");
+
+        // print non-null children
+        if (left != null) {
+            builder.append(left.printPreOrder(level + 1));
+        }
+        if (center != null) {
+            builder.append(center.printPreOrder(level + 1));
+        }
+        if (right != null) {
+            builder.append(right.printPreOrder(level + 1));
         }
         return builder.toString();
-    }
+    } // end printPreOrder
 
     @Override
     public String toString() {
-        return String.format("[%s, %s]", lkey, rkey);
+        return String.format("%s %s", lkey, rkey);
     }
 
     // -------------------PRIVATE METHODS------------------------
@@ -863,40 +893,4 @@ public class TTNode<Key extends Comparable<? super Key>> {
             left.setRightChild(null);
         } // end else
     } // end rotateClockwise
-
-    /**
-     * Private helper method for our printDepthFirst method. This
-     * method recursively lets us print all nodes at the same
-     * exact height. If h is the height of the tree, then
-     * 
-     * 1 <= level <= height
-     * 
-     * otherwise we will eventually run into a null pointer.
-     * 
-     * @param builder
-     *            -- StringBuilder object passed in that allows
-     *            us to efficiently construct a String
-     * @param level
-     *            -- level we wish to print. Must satisfy above
-     *            inequality
-     */
-    private void printGivenLevel(StringBuilder builder,
-            int level) {
-        if (level == 1) {
-            builder.append(this.toString());
-            builder.append(" ");
-        }
-        else if (center == null) {
-            left.printGivenLevel(builder, level - 1);
-        }
-        else if (right == null) {
-            left.printGivenLevel(builder, level - 1);
-            center.printGivenLevel(builder, level - 1);
-        }
-        else {
-            left.printGivenLevel(builder, level - 1);
-            center.printGivenLevel(builder, level - 1);
-            right.printGivenLevel(builder, level - 1);
-        }
-    } // end printGivenLevel
 } // end TTNode

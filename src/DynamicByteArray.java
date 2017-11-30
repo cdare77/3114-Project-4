@@ -17,8 +17,8 @@ public class DynamicByteArray {
 
     private byte[] memory; // actual array storing records
     private int blockSize; // initial size of array; will
-                             // affect how much we expand the
-                             // table by
+                           // affect how much we expand the
+                           // table by
     private int offset;
     // references to the hash tables we will be affecting
     private HashTable artistTable;
@@ -33,9 +33,12 @@ public class DynamicByteArray {
      * references to an artist table and song table for clean
      * insertions and deletions/
      * 
-     * @param initialSize -- initial size of array
-     * @param aTable -- reference to artist hash table
-     * @param sTable -- reference to song hash table
+     * @param initialSize
+     *            -- initial size of array
+     * @param aTable
+     *            -- reference to artist hash table
+     * @param sTable
+     *            -- reference to song hash table
      */
     public DynamicByteArray(int initialSize, HashTable aTable,
             HashTable sTable) {
@@ -66,15 +69,21 @@ public class DynamicByteArray {
     public Handle insert(String name, boolean isArtist) {
 
         Handle toRet;
-        boolean successfulHashInsert;
 
+        // To prevent inserting duplicates, we check
+        // if the element is already in the hash table
         if (isArtist) {
+            // look in artist table
             toRet = artistTable.search(name);
         }
         else {
+            // look in song table
             toRet = songTable.search(name);
         }
         if (toRet != null) {
+            // the current name is in our table, and thus
+            // in memory as well. Return a reference to this
+            // element
             return toRet;
         }
 
@@ -95,25 +104,13 @@ public class DynamicByteArray {
         System.arraycopy(nameArr, 0, memory, offset,
                 length);
 
+        // place our new handle into respective hash table
         toRet = new Handle(memory, offset, length);
-
-        // insert our new handle into its respective hash table
         if (isArtist) {
-            successfulHashInsert = artistTable.insert(toRet);
+            artistTable.insert(toRet);
         }
         else {
-            successfulHashInsert = songTable.insert(toRet);
-        }
-
-        if (!successfulHashInsert) {
-            // quadratic probing prevented us from inserting this
-            // handle into the hash table
-            memory[offset - 3] = 0x00;
-            System.out.printf(
-                    "Unsuccessful quadratic probe on %s\n",
-                    name);
-            // TODO dont know how to handle an unsuccessful
-            // quadratic probe
+            songTable.insert(toRet);
         }
 
         // update pointer to offset

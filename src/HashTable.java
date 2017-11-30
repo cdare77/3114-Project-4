@@ -11,7 +11,6 @@
  * 
  * @author Chris Dare (cdare77@vt.edu)
  * @version 11/23/2017
- *
  */
 public class HashTable {
 
@@ -19,7 +18,6 @@ public class HashTable {
 
     private Handle[] table; // array containing data
     private int logicalSize; // current number of elements
-    private int physicalSize; // size of the array holding data
     private int defaultSize;
     private static final Handle GRAVESTONE =
             new Handle(new byte[0], -1, -1); // Gravestone
@@ -36,42 +34,11 @@ public class HashTable {
     public HashTable(int size) {
         logicalSize = 0;
         defaultSize = size;
-        physicalSize = size;
-        table = new Handle[physicalSize];
+        table = new Handle[size];
     }
 
     // ---------------- PUBLIC METHODS -------------------
 
-    /**
-     * Inserts a handle into the hash table. If we exceed half
-     * the table's size, we expand the size of the table by a
-     * factor of 2. If we cannot find a position in the probe
-     * sequence, we return false.
-     * 
-     * @param handle
-     *            -- handle to insert
-     * @return true if successfully inserted, false otherwise
-     */
-    public boolean insert(Handle handle) {
-        if (logicalSize + 1 > physicalSize / 2) {
-            expandTable();
-        }
-        int homePos = hash(table, handle.getStringAt());
-        int pos;
-
-        // QUADRATIC PROBE
-        for (int i = 0; i < table.length; i++) {
-            pos = (homePos + i * i) % table.length;
-            if (table[pos] == null || table[pos] == GRAVESTONE) {
-                table[pos] = handle;
-                logicalSize++;
-                return true;
-            } // end if
-        } // end for loop
-
-        return false;
-    }
-    
     /**
      * Dereferences all objects in our table and creates a new
      * table with the same initial size as the previous table
@@ -79,7 +46,6 @@ public class HashTable {
     public void clear() {
         table = new Handle[defaultSize];
         logicalSize = 0;
-        physicalSize = defaultSize;
     }
 
     /**
@@ -93,8 +59,7 @@ public class HashTable {
      * 
      * @param name
      *            -- string to hash
-     * @return reference to handle found, null if not
-     *         found
+     * @return reference to handle found, null if not found
      */
     public Handle search(String name) {
         int homePos = hash(table, name);
@@ -114,6 +79,21 @@ public class HashTable {
         } // end for
 
         return null;
+    }
+
+    /**
+     * Public method to insert into our table. If the number of
+     * elements exceeds half the logical size of our current
+     * table, we expand the table by a factor of 2.
+     * 
+     * @param handle -- handle we wish to insert
+     */
+    public void insert(Handle handle) {
+        if (logicalSize + 1 > table.length / 2) {
+            table = this.expandTable(table);
+        }
+        table = this.insertHelper(table, handle);
+        logicalSize++;
     }
 
     /**
@@ -168,16 +148,11 @@ public class HashTable {
 
         for (int i = 0; i < length; i++) {
             if (table[i] != null && table[i] != GRAVESTONE) {
-                builder.append(String.format("%s @ %d",
+                builder.append(String.format("|%s| %d\n",
                         table[i].getStringAt(), i));
-                if (i != length - 1) {
-                    builder.append(", ");
-                }
             } // end outer if
         } // end for loop
 
-        builder.append(String.format("\nNumber of elements: %d",
-                logicalSize));
         return builder.toString();
     } // end toString()
 
@@ -218,33 +193,59 @@ public class HashTable {
     } // end hash()
 
     /**
+     * Simply inserts a handle into the hash table. The function
+     * will continue probing until the handle is inserted into
+     * the table specified, expanding if necessary
+     * 
+     * @param handle
+     *            -- handle to insert
+     * @return reference to table after successful insertion
+     */
+    private Handle[] insertHelper(Handle[] myTable,
+            Handle handle) {
+
+        int homePos = hash(myTable, handle.getStringAt());
+        int pos;
+
+        // QUADRATIC PROBE
+        for (int i = 0; i < myTable.length; i++) {
+            pos = (homePos + i * i) % myTable.length;
+            if (myTable[pos] == null
+                    || myTable[pos] == GRAVESTONE) {
+                myTable[pos] = handle;
+                // break from loop
+                return myTable;
+            } // end if
+        } // end for loop
+
+        // we have gone through an entire iteration of the hash
+        // table and still cannot find a spot. Thus, we expand
+        // the table and retry
+        myTable = this.expandTable(myTable);
+        
+        return insertHelper(myTable, handle);
+    }
+
+
+    /**
      * Private helper method which creates a new table twice the
      * size of our previous table and inserts all valid records.
      * Gravestone does not count as a valid record.
+     * 
+     * @param myTable -- table we wish to expand
+     * @return reference to new expanded table
      */
-    private void expandTable() {
-        Handle[] newTable = new Handle[physicalSize * 2];
+    private Handle[] expandTable(Handle[] myTable) {
+        Handle[] newTable = new Handle[myTable.length * 2];
         // iterate sequentially through previous table
-        for (int i = 0; i < physicalSize; i++) {
+        for (int i = 0; i < myTable.length; i++) {
             // copy over all non-null elements that are not our
             // gravestone
-            if (table[i] != null && table[i] != GRAVESTONE) {
+            if (myTable[i] != null && myTable[i] != GRAVESTONE) {
                 // valid element to copy over
-                int newHome =
-                        hash(newTable, table[i].getStringAt());
-                int pos;
-
-                // QUADRATIC PROBE
-                for (int j = 0; j < newTable.length; j++) {
-                    pos = (newHome + j * j) % newTable.length;
-                    if (newTable[pos] == null) {
-                        newTable[pos] = table[i];
-                        break;
-                    }
-                } // end inner-for
-            } // end if (valid element to copy)
-        } // end outerFor
-        physicalSize *= 2;
-        table = newTable;
+                newTable = this.insertHelper(newTable, myTable[i]);
+            }
+        } // end for-loop
+        return newTable;
     } // end expandTable
 } // end HashTable

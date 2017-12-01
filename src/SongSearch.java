@@ -217,12 +217,12 @@ public class SongSearch {
                     "The KVPair (|%s|,|%s|),(%d,%d) is added to"
                             + " the tree.\n",
                     artist.getStringAt(), song.getStringAt(),
-                    artist.getOffset(), song.getOffset());
+                    artist.getOffset() - 3, song.getOffset() - 3);
             System.out.printf(
                     "The KVPair (|%s|,|%s|),(%d,%d) is added to"
                             + " the tree.\n",
                     song.getStringAt(), artist.getStringAt(),
-                    song.getOffset(), artist.getOffset());
+                    song.getOffset() - 3, artist.getOffset() - 3);
         }
         else {
             // duplicate artist-song pair; do not insert.
@@ -230,12 +230,12 @@ public class SongSearch {
                     "The KVPair (|%s|,|%s|),(%d,%d) duplicates a"
                             + " record already in the tree.\n",
                     artist.getStringAt(), song.getStringAt(),
-                    artist.getOffset(), song.getOffset());
+                    artist.getOffset() - 3, song.getOffset() - 3);
             System.out.printf(
                     "The KVPair (|%s|,|%s|),(%d,%d) duplicates a"
                             + " record already in the tree.\n",
                     song.getStringAt(), artist.getStringAt(),
-                    song.getOffset(), artist.getOffset());
+                    song.getOffset() - 3, artist.getOffset() - 3);
         } // end else
     } // end parseInsert
 
@@ -343,16 +343,17 @@ public class SongSearch {
                 // any songs or the song no longer has any
                 // composers
                 memory.delete(value, !isArtist);
-                if (isArtist) {
-                    System.out.printf(
-                            "|%s| is deleted from the song database.\n",
-                            value.getStringAt());
-                }
-                else {
-                    System.out.printf(
-                            "|%s| is deleted from the artist database.\n",
-                            value.getStringAt());
-                } // end else
+                // TODO: This call needs to come before the last printf statement
+//                if (isArtist) {
+//                    System.out.printf(
+//                            "|%s| is deleted from the song database.\n",
+//                            value.getStringAt());
+//                }
+//                else {
+//                    System.out.printf(
+//                            "|%s| is deleted from the artist database.\n",
+//                            value.getStringAt());
+//                } // end else
             } // end if
         } // end for loop
 
@@ -491,33 +492,53 @@ public class SongSearch {
 
         // Check to make sure song-artist pair exist. If not,
         // report and exit
-        boolean invalidCall = false;
         if (artistHandle == null) {
             // artist not in artist hash table
             System.out.printf(
                     "|%s| does not exist in the artist database.\n",
                     artistSong[0]);
-            invalidCall = true;
+            return;
         }
-        if (songHandle == null) {
+        else if (songHandle == null) {
             // song not in song hash table
             System.out.printf(
                     "|%s| does not exist in the song database.\n",
                     artistSong[1]);
-            invalidCall = true;
-        }
-
-        if (invalidCall) {
             return;
         }
 
+
         // remove this specific combination from both
         // trees
-        tree.remove(new KVPair<Handle, Handle>(artistHandle,
+        KVPair<Handle, Handle> removedArtist = tree.remove(new KVPair<Handle, Handle>(artistHandle,
                 songHandle));
-        tree.remove(new KVPair<Handle, Handle>(songHandle,
+        KVPair<Handle, Handle> removedSong = tree.remove(new KVPair<Handle, Handle>(songHandle,
                 artistHandle));
 
+        // If this call was invalid in any way
+        boolean invalidCall = false;
+        
+        // If query does not exist in the tree, then report and exit.
+        if (removedArtist == null) {
+            System.out.printf(
+                    "The KVPair (|%s|,|%s|) was not found in the database.\n",
+                    artistHandle.getStringAt(),
+                    songHandle.getStringAt());
+            invalidCall = true;
+        }
+        if (removedSong == null) {
+            System.out.printf(
+                    "The KVPair (|%s|,|%s|) was not found in the database.\n",
+                    songHandle.getStringAt(),
+                    artistHandle.getStringAt());
+            invalidCall = true;
+        }
+        
+        // Terminate the method if the call was invalid
+        if (invalidCall) {
+            return;
+        }
+        
         System.out.printf(
                 "The KVPair (|%s|,|%s|) is deleted from the tree.\n",
                 artistHandle.getStringAt(),
@@ -526,7 +547,7 @@ public class SongSearch {
                 "The KVPair (|%s|,|%s|) is deleted from the tree.\n",
                 songHandle.getStringAt(),
                 artistHandle.getStringAt());
-
+        
         // likely does not have any worse efficiency than
         // O(log n) unless this artist or song takes up a
         // significant portion of the table
@@ -535,15 +556,6 @@ public class SongSearch {
         int thisArtistLeft =
                 allWithKey(artistHandle).size();
 
-        if (thisSongLeft == 0) {
-            // there are no more instances of this song
-            // attached to any other artist, so we remove all
-            // references to it
-            memory.delete(songHandle, false);
-            System.out.printf(
-                    "|%s| is deleted from the song database.\n",
-                    songHandle.getStringAt());
-        }
         if (thisArtistLeft == 0) {
             // there are no more instances of this artist
             // having any other songs, so we remove all
@@ -552,6 +564,15 @@ public class SongSearch {
             System.out.printf(
                     "|%s| is deleted from the artist database.\n",
                     artistHandle.getStringAt());
+        }
+        if (thisSongLeft == 0) {
+            // there are no more instances of this song
+            // attached to any other artist, so we remove all
+            // references to it
+            memory.delete(songHandle, false);
+            System.out.printf(
+                    "|%s| is deleted from the song database.\n",
+                    songHandle.getStringAt());
         }
     } // end parseDelete
 

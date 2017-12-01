@@ -98,7 +98,7 @@ public class SongSearchTest extends TestCase {
             ps.close();
             System.setOut(old);
 
-//             System.out.print(baos.toString());
+            // System.out.print(baos.toString());
         } // end try
         catch (IOException e) {
             e.printStackTrace();
@@ -145,8 +145,8 @@ public class SongSearchTest extends TestCase {
             ps.close();
             System.setOut(old);
 
-//             System.out.print(baos.toString());
-        }
+            System.out.print(baos.toString());
+        } // end try
         catch (IOException e) {
             e.printStackTrace();
         } // end catch
@@ -202,7 +202,7 @@ public class SongSearchTest extends TestCase {
             ps.close();
             System.setOut(old);
 
-            System.out.print(baos.toString());
+            // System.out.print(baos.toString());
         }
         catch (IOException e) {
             e.printStackTrace();

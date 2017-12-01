@@ -73,7 +73,8 @@ public class HashTable {
             if (table[pos] == null) {
                 break;
             }
-            else if (table[pos].getStringAt().equals(name)) {
+            else if (table[pos] != GRAVESTONE
+                    && table[pos].getStringAt().equals(name)) {
                 return table[pos];
             }
         } // end for
@@ -86,7 +87,8 @@ public class HashTable {
      * elements exceeds half the logical size of our current
      * table, we expand the table by a factor of 2.
      * 
-     * @param handle -- handle we wish to insert
+     * @param handle
+     *            -- handle we wish to insert
      */
     public void insert(Handle handle) {
         if (logicalSize + 1 > table.length / 2) {
@@ -222,17 +224,17 @@ public class HashTable {
         // table and still cannot find a spot. Thus, we expand
         // the table and retry
         myTable = this.expandTable(myTable);
-        
+
         return insertHelper(myTable, handle);
     }
-
 
     /**
      * Private helper method which creates a new table twice the
      * size of our previous table and inserts all valid records.
      * Gravestone does not count as a valid record.
      * 
-     * @param myTable -- table we wish to expand
+     * @param myTable
+     *            -- table we wish to expand
      * @return reference to new expanded table
      */
     private Handle[] expandTable(Handle[] myTable) {
@@ -243,7 +245,8 @@ public class HashTable {
             // gravestone
             if (myTable[i] != null && myTable[i] != GRAVESTONE) {
                 // valid element to copy over
-                newTable = this.insertHelper(newTable, myTable[i]);
+                newTable =
+                        this.insertHelper(newTable, myTable[i]);
             }
         } // end for-loop
         return newTable;

@@ -117,12 +117,9 @@ public class Handle implements Comparable<Handle> {
         else {
             // if handles point to same record, they are likely equal
             Handle otherHandle = (Handle) other;
-            if (this.getLength() == otherHandle.getLength()
+            return this.getLength() == otherHandle.getLength()
                     && this.getOffset() == otherHandle
-                            .getOffset()) {
-                return true;
-            }
-            return false;
+                    .getOffset();
         } // end else
     } // end equals
     

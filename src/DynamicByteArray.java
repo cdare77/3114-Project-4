@@ -133,8 +133,8 @@ public class DynamicByteArray {
     public void delete(Handle handle, boolean isArtist) {
         // make corresponding marks to memory (null
         // out the flag)
-        int offset = handle.getOffset();
-        memory[offset - 3] = 0x00;
+        int handleOff = handle.getOffset();
+        memory[handleOff - 3] = 0x00;
 
         if (isArtist) {
             // handle points to an artist; thus remove from
@@ -219,7 +219,7 @@ public class DynamicByteArray {
                 Handle artist = artistTable.search(searchString);
                 Handle song = songTable.search(searchString);
 
-                if (song != null && song.getOffset() == i + 3) {
+                if (song != null) {
                     // data pointed to is a song
                     song.setOffset(newOffset + 3);
                     song.setMemory(newMemory);
@@ -237,5 +237,4 @@ public class DynamicByteArray {
         memory = newMemory;
         offset = newOffset;
     } // end expandMemory
-
 } // end dynamicByteArray

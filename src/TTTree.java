@@ -11,9 +11,7 @@ import java.util.List;
  * @author Chris Dare (cdare77@vt.edu)
  * @version 11/21/2017
  * @param <Key>
- *            -- generic reference for comparable
- * @param <Value>
- *            -- generic reference for data stored
+ *            -- generic reference for comparable KVPair
  */
 public class TTTree<Key extends Comparable<? super Key>> {
 
@@ -39,8 +37,6 @@ public class TTTree<Key extends Comparable<? super Key>> {
      * 
      * @param k
      *            -- key to insert corresponding to KV pair
-     * @param val
-     *            -- value to insert corresponding to KV pair
      */
     public void insert(Key k) {
         if (this.isEmpty()) {

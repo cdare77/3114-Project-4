@@ -19,7 +19,6 @@ public class SongSearchTest extends TestCase {
 
     // references to our command file and
     // the writer we will use to create commands
-    private File commandFile;
     private FileWriter writer;
 
     // arguments for SongSearch.main
@@ -29,7 +28,7 @@ public class SongSearchTest extends TestCase {
     // a string by using an output stream
     private ByteArrayOutputStream baos;
     private PrintStream ps;
-    private static final PrintStream old = System.out;
+    private static final PrintStream OLD = System.out;
 
     // ------------------- PUBLIC METHODS ----------------------
 
@@ -47,16 +46,15 @@ public class SongSearchTest extends TestCase {
 
         try {
             // set up file in runtime environment
-            commandFile =
+            File commandFile =
                     File.createTempFile("commandFile", ".txt");
             writer = new FileWriter(commandFile);
-
+            args[2] = commandFile.getAbsolutePath();
         }
         catch (IOException e) {
             e.printStackTrace();
-        }
-        args[2] = commandFile.getAbsolutePath();
-    }
+        } // end catch
+    } // end setUp
 
     /**
      * Tests the functionality of insert, and checks that it
@@ -96,9 +94,10 @@ public class SongSearchTest extends TestCase {
             SongSearch.main(args);
 
             ps.close();
-            System.setOut(old);
+            System.setOut(OLD);
 
             // System.out.print(baos.toString());
+            assertEquals(4228, baos.toString().length());
         } // end try
         catch (IOException e) {
             e.printStackTrace();
@@ -143,9 +142,10 @@ public class SongSearchTest extends TestCase {
             SongSearch.main(args);
 
             ps.close();
-            System.setOut(old);
+            System.setOut(OLD);
 
-            System.out.print(baos.toString());
+            // System.out.print(baos.toString());
+            assertEquals(4755, baos.toString().length());
         } // end try
         catch (IOException e) {
             e.printStackTrace();
@@ -200,9 +200,10 @@ public class SongSearchTest extends TestCase {
             SongSearch.main(args);
 
             ps.close();
-            System.setOut(old);
+            System.setOut(OLD);
 
-            // System.out.print(baos.toString());
+//            System.out.print(baos.toString());
+            assertEquals(5905, baos.toString().length());
         }
         catch (IOException e) {
             e.printStackTrace();

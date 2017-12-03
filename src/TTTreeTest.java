@@ -1,7 +1,4 @@
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-
 import student.TestCase;
 
 /**
@@ -17,13 +14,11 @@ public class TTTreeTest extends TestCase {
     private TTTree<KVPair<Integer, Integer>> tree;
 
     // ------------ PUBLIC METHODS -------------
-    @Before
     @Override
     public void setUp() {
         tree = new TTTree<KVPair<Integer, Integer>>();
     }
 
-    @Test
     /**
      * Tests the insert method against the desired functionality
      */
@@ -45,7 +40,6 @@ public class TTTreeTest extends TestCase {
         assertEquals(8, tree.size());
     }
 
-    @Test
     /**
      * Tests the remove method against the desired functionality
      */
@@ -114,7 +108,6 @@ public class TTTreeTest extends TestCase {
 
     }
 
-    @Test
     /**
      * Tests the functionality of height after each insertion
      */
@@ -158,12 +151,15 @@ public class TTTreeTest extends TestCase {
         assertEquals(4, tree.height());
     } // end testInsert
 
-    @Test
     /**
      * Tests the functionality of Range search works and that it
      * holds inclusive relations
      */
     public void testRangeSearch() {
+        assertEquals("[]", tree.rangeSearch(
+                new KVPair<Integer, Integer>(16, 0),
+                new KVPair<Integer, Integer>(40, 0)).toString());
+        
         tree.insert(new KVPair<Integer, Integer>(10, 10));
         tree.insert(new KVPair<Integer, Integer>(20, 10));
         tree.insert(new KVPair<Integer, Integer>(15, 10));
@@ -205,12 +201,12 @@ public class TTTreeTest extends TestCase {
         assertEquals("[2 2]", list.toString());
     }
 
-    @Test
     /**
      * Tests that toString returns a representation of the tree
      * in depth-first order
      */
     public void testToString() {
+        assertEquals(tree.toString(), "");
         tree.insert(new KVPair<Integer, Integer>(10, 10));
         tree.insert(new KVPair<Integer, Integer>(20, 10));
         tree.insert(new KVPair<Integer, Integer>(15, 10));
@@ -242,7 +238,10 @@ public class TTTreeTest extends TestCase {
                 "    40 40\n", tree.toString());
     }
 
-    @Test
+    /**
+     * Tests the functionality of clear to assert that the tree
+     * is logically empty after its call
+     */
     public void testClear() {
         tree.insert(new KVPair<Integer, Integer>(10, 10));
         tree.insert(new KVPair<Integer, Integer>(20, 10));
@@ -268,7 +267,9 @@ public class TTTreeTest extends TestCase {
         assertEquals(0, tree.size());
     }
 
-    @Test
+    /**
+     * Tests
+     */
     public void testSearch() {
         KVPair<Integer, Integer> tens =
                 new KVPair<Integer, Integer>(10, 10);
@@ -288,7 +289,7 @@ public class TTTreeTest extends TestCase {
                 new KVPair<Integer, Integer>(21, 21);
 
         assertNull(tree.search(twentyOnes));
-        
+
         tree.insert(tens);
         tree.insert(new KVPair<Integer, Integer>(20, 10));
         tree.insert(new KVPair<Integer, Integer>(15, 10));
@@ -309,7 +310,7 @@ public class TTTreeTest extends TestCase {
 
         assertEquals(tens, tree
                 .search(new KVPair<Integer, Integer>(10, 10)));
-        assertEquals(sixteens, tree.search(sixteens =
+        assertEquals(sixteens, tree.search(
                 new KVPair<Integer, Integer>(16, 16)));
         assertEquals(fourties, tree
                 .search(new KVPair<Integer, Integer>(40, 40)));
@@ -317,5 +318,8 @@ public class TTTreeTest extends TestCase {
                 .search(new KVPair<Integer, Integer>(35, 35)));
         assertEquals(thirtys, tree
                 .search(new KVPair<Integer, Integer>(30, 30)));
-    }
+        assertEquals(twentyOnes, tree
+                .search(new KVPair<Integer, Integer>(21, 21)));
+
+    } // end testSearch
 } // TTTreeTest

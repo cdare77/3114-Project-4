@@ -13,7 +13,6 @@ public class HashTableTest extends TestCase {
 
     // ----------------PRIVATE VARIABLES------------------
     private HashTable table;
-    private byte[] memory;
     private Handle nickelback;
     private Handle photograph;
     private Handle rockstar;
@@ -31,7 +30,7 @@ public class HashTableTest extends TestCase {
     public void setUp() {
         byte[] temp;
         int offset = 0;
-        memory = new byte[96];
+        byte[] memory = new byte[96];
 
         temp = "Nickelback".getBytes();
         System.arraycopy(temp, 0, memory, offset, temp.length);

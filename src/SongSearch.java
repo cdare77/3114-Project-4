@@ -261,9 +261,6 @@ public class SongSearch {
         // flag which indicates whether our argument was
         // artist or song
         boolean isArtist = argument.contains("artist");
-        // holds our two handles. If isArtist = true,
-        // then key is our artist and value is our
-        // song. Opposite order for isArtist = false.
         Handle key;
         Handle value;
 
@@ -291,18 +288,8 @@ public class SongSearch {
         } // end else
 
         // Get a list of all pairs in our tree with the same key
-        // If isArtist = true, this gives us a list of all
-        // pairs by that artist. If isArtist = false, this gives
-        // us a list of all pairs with the specified songname
         List<KVPair<Handle, Handle>> withThisKey =
                 allWithKey(key);
-
-        // Stores a list of all pairs in our tree with the same
-        // value (to be specified later). If isArtist = true,
-        // this will give us a list of all songs with the same
-        // name. This is used for removing references to
-        // songs/artists after their last song/composer has been
-        // deleted
         List<KVPair<Handle, Handle>> withSameValue;
 
         for (KVPair<Handle, Handle> pair : withThisKey) {
@@ -332,34 +319,22 @@ public class SongSearch {
                         key.getStringAt(), value.getStringAt());
             }
 
-            // if isArtist = true, this gives a list of all
-            // composers who have written the song stored in
-            // value. If isArtist = false, this gives a list of
-            // all artists who have written
             withSameValue = allWithKey(value);
-
             if (withSameValue.size() == 0) {
-                // remove references if the artist no longer has
-                // any songs or the song no longer has any
-                // composers
                 memory.delete(value, !isArtist);
-                // TODO: This call needs to come before the last printf statement
-//                if (isArtist) {
-//                    System.out.printf(
-//                            "|%s| is deleted from the song database.\n",
-//                            value.getStringAt());
-//                }
-//                else {
-//                    System.out.printf(
-//                            "|%s| is deleted from the artist database.\n",
-//                            value.getStringAt());
-//                } // end else
+                if (isArtist) {
+                    System.out.printf(
+                            "|%s| is deleted from the song database.\n",
+                            value.getStringAt());
+                }
+                else {
+                    System.out.printf(
+                            "|%s| is deleted from the artist database.\n",
+                            value.getStringAt());
+                } // end else
             } // end if
         } // end for loop
 
-        // we've now removed all references to the specified key
-        // in the tree, so we must remove from our memory and
-        // hash tables
         memory.delete(key, isArtist);
         if (isArtist) {
             System.out.printf(
@@ -510,9 +485,11 @@ public class SongSearch {
 
         // remove this specific combination from both
         // trees
-        KVPair<Handle, Handle> removedArtist = tree.remove(new KVPair<Handle, Handle>(artistHandle,
+        KVPair<Handle, Handle> removedArtist =
+                tree.remove(new KVPair<Handle, Handle>(artistHandle,
                 songHandle));
-        KVPair<Handle, Handle> removedSong = tree.remove(new KVPair<Handle, Handle>(songHandle,
+        KVPair<Handle, Handle> removedSong = 
+                tree.remove(new KVPair<Handle, Handle>(songHandle,
                 artistHandle));
 
         // If this call was invalid in any way

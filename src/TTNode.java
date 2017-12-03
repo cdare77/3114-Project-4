@@ -30,7 +30,9 @@ public class TTNode<Key extends Comparable<? super Key>> {
      * Default constructor. Pointers are set to null
      */
     public TTNode() {
-        center = left = right = null;
+        center = null;
+        left = null;
+        right = null;
     }
 
     /**
@@ -168,8 +170,6 @@ public class TTNode<Key extends Comparable<? super Key>> {
      * Recursive helper method which inserts a key-value pair
      * into the root of the specified sub-tree
      * 
-     * @param root
-     *            -- root of specified subtree
      * @param k
      *            -- key to insert
      * @return reference to node after key is inserted into
@@ -188,26 +188,32 @@ public class TTNode<Key extends Comparable<? super Key>> {
 
             retval = left.insertHelp(k);
 
-            if (retval == left)
+            if (retval == left) {
                 return this;
-            else
+            }
+            else {
                 return this.add(retval);
+            }
         }
         else if (right == null || k.compareTo(rkey) <= 0) {
 
             retval = center.insertHelp(k);
 
-            if (retval == center)
+            if (retval == center) {
                 return this;
-            else
+            }
+            else {
                 return this.add(retval);
+            }
         }
         else { // Insert right
             retval = right.insertHelp(k);
-            if (retval == right)
+            if (retval == right) {
                 return this;
-            else
+            }
+            else {
                 return this.add(retval);
+            }
         }
 
     } // end inserthelp
@@ -433,13 +439,17 @@ public class TTNode<Key extends Comparable<? super Key>> {
     /**
      * Prints the subtree along a preorder traversal
      * 
+     * @param level
+     *            - represents the current level we are printing
+     *            from in order to keep track of indentation
+     * 
      * @return string representation of the subtree
      */
     public String printPreOrder(int level) {
         StringBuilder builder = new StringBuilder();
-        
+
         // Print 2 * level characters of whitespace
-        for (int i = 0; i < 2*level; i++) {
+        for (int i = 0; i < 2 * level; i++) {
             builder.append(" ");
         }
 

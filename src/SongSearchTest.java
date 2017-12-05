@@ -40,6 +40,7 @@ public class SongSearchTest extends TestCase {
         // initial block size is 256
         args[1] = "256";
 
+        
         baos = new ByteArrayOutputStream();
         ps = new PrintStream(baos);
         System.setOut(ps);
@@ -98,8 +99,8 @@ public class SongSearchTest extends TestCase {
             ps.close();
             System.setOut(OLD);
 
-//             System.out.print(baos.toString().length());
-            assertEquals(4545, baos.toString().length());
+            // System.out.print(baos.toString());
+            assertEquals(4510, baos.toString().length());
         } // end try
         catch (IOException e) {
             e.printStackTrace();
@@ -135,7 +136,7 @@ public class SongSearchTest extends TestCase {
                     "print song\n" +
                     "remove song Breath\n" +
                     "print artist\n" +
-                    "print song\n" + 
+                    "print song\n" +
                     "remove artist abc\n" +
                     "remove song abc");
 
@@ -206,14 +207,14 @@ public class SongSearchTest extends TestCase {
             ps.close();
             System.setOut(OLD);
 
-//            System.out.print(baos.toString());
-            assertEquals(5905, baos.toString().length());
+            // System.out.print(baos.toString());
+            assertEquals(6059, baos.toString().length());
         }
         catch (IOException e) {
             e.printStackTrace();
         } // end catch
     } // end testDelete
-    
+
     /**
      * Tests that our list method outputs.
      */
@@ -229,11 +230,13 @@ public class SongSearchTest extends TestCase {
                     "insert Linkin Park<SEP>Crawling\n" +
                     "insert Linkin Park<SEP>One Step Closer\n" +
                     "insert Linkin Park<SEP>In The End\n" +
-                    "insert Linkin Park<SEP>Points of Authority\n" +
-                    "list artist Nickelback\n" + 
-                    "list artist Breaking Benjamin\n" + 
-                    "list song Numb\n" + 
-                    "list song asdf");
+                    "insert Linkin Park<SEP>Points of Authority\n"
+                    +
+                    "list artist Nickelback\n" +
+                    "list artist Breaking Benjamin\n" +
+                    "list song Numb\n" +
+                    "list song asdf\n"
+                    + "print tree\n");
 
             // free system resources
             writer.close();
@@ -244,29 +247,33 @@ public class SongSearchTest extends TestCase {
             ps.close();
             System.setOut(OLD);
 
-            assertEquals(2901, baos.toString().length());
+//            System.out.print(baos.toString());
+            assertEquals(3117, baos.toString().length());
         }
         catch (IOException e) {
             e.printStackTrace();
         } // end catch
-        
+
     }
-    
+
     /**
      * Tests that our program must be called correctly.
      */
     public void testInvocation() {
-        SongSearch.main(new String[]{});
+        SongSearch.main(new String[] {});
         assertEquals("Improper invocation\n\n\t\tjava"
-                        + " SongSearch {initial-hash-size}"
-                        + " {block-size} {command-file}\n", baos.toString());
+                + " SongSearch {initial-hash-size}"
+                + " {block-size} {command-file}\n",
+                baos.toString());
     }
-    
+
     /**
-     * Tests that the program errs if the command file does not exist.
+     * Tests that the program errs if the command file does not
+     * exist.
      */
     public void testCommandFile() {
-        SongSearch.main(new String[]{"100", "1024", "abc3d"});
-        assertEquals("Command file abc3d does not exist\n", baos.toString());
+        SongSearch.main(new String[] { "100", "1024", "abc3d" });
+        assertEquals("Command file abc3d does not exist\n",
+                baos.toString());
     }
 } // end SongSearchTest

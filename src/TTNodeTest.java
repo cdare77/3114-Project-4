@@ -70,5 +70,15 @@ public class TTNodeTest extends TestCase {
 
         assertEquals(30, (int) root.removeHelper(30));        
         assertEquals(27, (int) root.removeHelper(27));
+        assertEquals(15, (int) root.removeHelper(15));
+        assertEquals(20, (int) root.removeHelper(20));
+        
+        root = root.leftChild();
+        root.setRightKey(30);
+        root = root.insertHelp(27);
+        
+        assertEquals(30, (int) root.removeHelper(30));
+        
+        root = root.leftChild();     
     }
 }

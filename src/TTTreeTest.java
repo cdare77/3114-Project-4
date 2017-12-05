@@ -33,10 +33,14 @@ public class TTTreeTest extends TestCase {
         tree.insert(new KVPair<Integer, Integer>(5, 1));
         tree.insert(new KVPair<Integer, Integer>(25, 1));
         tree.insert(new KVPair<Integer, Integer>(16, 16));
-        assertEquals(tree.toString(), "15 10 17 1\n" +
-                "  5 1 10 10\n" +
-                "  16 16 16 16\n" +
-                "  20 10 25 1\n");
+        assertEquals(tree.toString(), "(5,1)\n" +
+                "(10,10)\n" +
+                "(15,10)\n" +
+                "(16,16)\n" +
+                "(16,16)\n" +
+                "(17,1)\n" +
+                "(20,10)\n" +
+                "(25,1)\n");
         assertEquals(8, tree.size());
     }
 
@@ -58,32 +62,42 @@ public class TTTreeTest extends TestCase {
         tree.insert(new KVPair<Integer, Integer>(25, 1));
         tree.insert(new KVPair<Integer, Integer>(16, 16));
 
-        assertEquals("15 10 17 1\n" +
-                "  5 1 10 10\n" +
-                "  16 16 16 16\n" +
-                "  20 10 25 1\n", tree.toString());
+        assertEquals("(5,1)\n" +
+                "(10,10)\n" +
+                "(15,10)\n" +
+                "(16,16)\n" +
+                "(16,16)\n" +
+                "(17,1)\n" +
+                "(20,10)\n" +
+                "(25,1)\n", tree.toString());
         assertEquals(8, tree.size());
 
         tree.remove(new KVPair<Integer, Integer>(16, 16));
         assertEquals(
-                "15 10 17 1\n" +
-                        "  5 1 10 10\n" +
-                        "  16 16\n" +
-                        "  20 10 25 1\n",
+                "(5,1)\n" +
+                        "(10,10)\n" +
+                        "(15,10)\n" +
+                        "(16,16)\n" +
+                        "(17,1)\n" +
+                        "(20,10)\n" +
+                        "(25,1)\n",
                 tree.toString());
         tree.remove(new KVPair<Integer, Integer>(16, 16));
         assertEquals(
-                "10 10 17 1\n" +
-                        "  5 1\n" +
-                        "  15 10\n" +
-                        "  20 10 25 1\n",
+                "(5,1)\n" +
+                        "(10,10)\n" +
+                        "(15,10)\n" +
+                        "(17,1)\n" +
+                        "(20,10)\n" +
+                        "(25,1)\n",
                 tree.toString());
         tree.remove(new KVPair<Integer, Integer>(5, 1));
         assertEquals(
-                "15 10 20 10\n" +
-                        "  10 10\n" +
-                        "  17 1\n" +
-                        "  25 1\n",
+                "(10,10)\n" +
+                        "(15,10)\n" +
+                        "(17,1)\n" +
+                        "(20,10)\n" +
+                        "(25,1)\n",
                 tree.toString());
         assertEquals(5, tree.size());
 
@@ -98,13 +112,14 @@ public class TTTreeTest extends TestCase {
         tree.insert(new KVPair<Integer, Integer>(7, 7));
         tree.insert(new KVPair<Integer, Integer>(9, 9));
         tree.insert(new KVPair<Integer, Integer>(4, 4));
-        assertEquals("7 7\n" +
-                "  4 4\n" +
-                "  9 9\n", tree.toString());
+
+        assertEquals("(4,4)\n" +
+                "(7,7)\n" +
+                "(9,9)\n", tree.toString());
 
         tree.remove(new KVPair<Integer, Integer>(7, 7));
-
-        assertEquals("4 4 9 9\n", tree.toString());
+        assertEquals("(4,4)\n" +
+                "(9,9)\n", tree.toString());
 
     }
 
@@ -159,7 +174,7 @@ public class TTTreeTest extends TestCase {
         assertEquals("[]", tree.rangeSearch(
                 new KVPair<Integer, Integer>(16, 0),
                 new KVPair<Integer, Integer>(40, 0)).toString());
-        
+
         tree.insert(new KVPair<Integer, Integer>(10, 10));
         tree.insert(new KVPair<Integer, Integer>(20, 10));
         tree.insert(new KVPair<Integer, Integer>(15, 10));
@@ -181,14 +196,15 @@ public class TTTreeTest extends TestCase {
         List<KVPair<Integer, Integer>> list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(16, 0),
                 new KVPair<Integer, Integer>(40, 0));
-        assertEquals("[16 16, 16 16, 17 1, 20 10, 21 21, 25 1"
-                + ", 30 30, 35 35]",
+
+        assertEquals("[(16,16), (16,16), (17,1), (20,10),"
+                + " (21,21), (25,1), (30,30), (35,35)]",
                 list.toString());
 
         list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(6, 0),
                 new KVPair<Integer, Integer>(6, 100));
-        assertEquals("[6 4, 6 6]", list.toString());
+        assertEquals("[(6,4), (6,6)]", list.toString());
 
         list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(100, 0),
@@ -198,7 +214,8 @@ public class TTTreeTest extends TestCase {
         list = tree.rangeSearch(
                 new KVPair<Integer, Integer>(1, 0),
                 new KVPair<Integer, Integer>(2, 100));
-        assertEquals("[2 2]", list.toString());
+
+        assertEquals("[(2,2)]", list.toString());
     }
 
     /**
@@ -225,17 +242,23 @@ public class TTTreeTest extends TestCase {
         tree.insert(new KVPair<Integer, Integer>(40, 40));
         tree.insert(new KVPair<Integer, Integer>(35, 35));
 
-        assertEquals("15 10 25 1\n" +
-                "  5 1 7 7\n" +
-                "    2 2 4 4\n" +
-                "    6 4 6 6\n" +
-                "    10 10\n" +
-                "  17 1\n" +
-                "    16 16 16 16\n" +
-                "    20 10 21 21\n" +
-                "  35 35\n" +
-                "    30 30\n" +
-                "    40 40\n", tree.toString());
+        assertEquals("(2,2)\n" +
+                "(4,4)\n" +
+                "(5,1)\n" +
+                "(6,4)\n" +
+                "(6,6)\n" +
+                "(7,7)\n" +
+                "(10,10)\n" +
+                "(15,10)\n" +
+                "(16,16)\n" +
+                "(16,16)\n" +
+                "(17,1)\n" +
+                "(20,10)\n" +
+                "(21,21)\n" +
+                "(25,1)\n" +
+                "(30,30)\n" +
+                "(35,35)\n" +
+                "(40,40)\n", tree.toString());
     }
 
     /**

@@ -147,7 +147,7 @@ public class TTTree<Key extends Comparable<? super Key>> {
         if (this.isEmpty()) {
             return "";
         }
-        return root.printPreOrder(0);
+        return root.printPreOrder();
     }
 
     /**

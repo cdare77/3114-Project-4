@@ -82,7 +82,7 @@ public class KVPair<Key extends Comparable<Key>,
 
     @Override
     public String toString() {
-        return String.format("%s %s", key.toString(),
+        return String.format("(%s,%s)", key.toString(),
                 value.toString());
     }
 

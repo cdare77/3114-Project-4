@@ -439,38 +439,28 @@ public class TTNode<Key extends Comparable<? super Key>> {
     /**
      * Prints the subtree along a preorder traversal
      * 
-     * @param level
-     *            - represents the current level we are printing
-     *            from in order to keep track of indentation
-     * 
      * @return string representation of the subtree
      */
-    public String printPreOrder(int level) {
+    public String printPreOrder() {
         StringBuilder builder = new StringBuilder();
-
-        // Print 2 * level characters of whitespace
-        for (int i = 0; i < 2 * level; i++) {
-            builder.append(" ");
-        }
-
-        // print left key
-        builder.append(lkey);
-        if (rkey != null) {
-            // print right key
-            builder.append(" ");
-            builder.append(rkey);
-        }
-        builder.append("\n");
-
+        
         // print non-null children
         if (left != null) {
-            builder.append(left.printPreOrder(level + 1));
+            builder.append(left.printPreOrder());
         }
+        // print left key
+        builder.append(lkey);
+        builder.append("\n");
         if (center != null) {
-            builder.append(center.printPreOrder(level + 1));
+            builder.append(center.printPreOrder());
+        }
+        if (rkey != null) {
+            // print right key
+            builder.append(rkey);
+            builder.append("\n");
         }
         if (right != null) {
-            builder.append(right.printPreOrder(level + 1));
+            builder.append(right.printPreOrder());
         }
         return builder.toString();
     } // end printPreOrder

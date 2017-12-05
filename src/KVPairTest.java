@@ -100,7 +100,7 @@ public class KVPairTest extends TestCase {
      * Tests the toString method against expected outcome
      */
     public void testToString() {
-        assertEquals("10 5", first.toString());
-        assertEquals("8 -2", second.toString());
+        assertEquals("(10,5)", first.toString());
+        assertEquals("(8,-2)", second.toString());
     }
 } // end KVPairTest

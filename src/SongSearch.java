@@ -552,7 +552,7 @@ public class SongSearch {
                     songHandle.getStringAt());
         }
     } // end parseDelete
-
+    
     /**
      * Calls on the functionality of range search to look for all
      * song-artist pairs with the specified song / artist,

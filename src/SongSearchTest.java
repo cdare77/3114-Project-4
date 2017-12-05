@@ -133,7 +133,9 @@ public class SongSearchTest extends TestCase {
                     "print song\n" +
                     "remove song Breath\n" +
                     "print artist\n" +
-                    "print song");
+                    "print song\n" + 
+                    "remove artist abc\n" +
+                    "remove song abc");
 
             // free system resources
             writer.close();
@@ -145,7 +147,7 @@ public class SongSearchTest extends TestCase {
             System.setOut(OLD);
 
             // System.out.print(baos.toString());
-            assertEquals(4755, baos.toString().length());
+            assertEquals(4843, baos.toString().length());
         } // end try
         catch (IOException e) {
             e.printStackTrace();
@@ -209,4 +211,22 @@ public class SongSearchTest extends TestCase {
             e.printStackTrace();
         } // end catch
     } // end testDelete
+    
+    /**
+     * Tests that our program must be called correctly.
+     */
+    public void testInvocation() {
+        SongSearch.main(new String[]{});
+        assertEquals("Improper invocation\n\n\t\tjava"
+                        + " SongSearch {initial-hash-size}"
+                        + " {block-size} {command-file}\n", baos.toString());
+    }
+    
+    /**
+     * Tests that the program errs if the command file does not exist.
+     */
+    public void testCommandFile() {
+        SongSearch.main(new String[]{"100", "1024", "abc3d"});
+        assertEquals("Command file abc3d does not exist\n", baos.toString());
+    }
 } // end SongSearchTest

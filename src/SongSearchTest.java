@@ -65,6 +65,7 @@ public class SongSearchTest extends TestCase {
         try {
             writer.write(
                     "insert Nickelback<SEP>Rockstar\n" +
+                            "insert Nickelback<SEP>Rockstar\n" +
                             "insert Nickelback<SEP>Animals\n" +
                             "insert Nickelback<SEP>Photograph\n"
                             +
@@ -84,8 +85,9 @@ public class SongSearchTest extends TestCase {
                             +
                             "insert Breaking Benjamin<SEP>The Diary of "
                             + "Jane\ninsert Breaking Benjamin<SEP>"
-                            + "Breath\nprint artist\n" +
-                            "print song\n" +
+                            + "Breath\nprint artist\n"
+                            + "abc\n"
+                            + "print song\n" +
                             "print tree\n list artist Nickelback");
             // free system resources
             writer.close();
@@ -96,8 +98,8 @@ public class SongSearchTest extends TestCase {
             ps.close();
             System.setOut(OLD);
 
-            // System.out.print(baos.toString());
-            assertEquals(4228, baos.toString().length());
+//             System.out.print(baos.toString().length());
+            assertEquals(4545, baos.toString().length());
         } // end try
         catch (IOException e) {
             e.printStackTrace();

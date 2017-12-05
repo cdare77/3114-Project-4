@@ -213,6 +213,44 @@ public class SongSearchTest extends TestCase {
     } // end testDelete
     
     /**
+     * Tests that our list method outputs.
+     */
+    public void testList() {
+        try {
+            writer.write("insert Nickelback<SEP>Rockstar\n" +
+                    "insert Nickelback<SEP>Animals\n" +
+                    "insert Nickelback<SEP>Photograph\n" +
+                    "insert Nickelback<SEP>Savin’ Me\n" +
+                    "insert Nickelback<SEP>How You Remind Me\n" +
+                    "insert Nickelback<SEP>Far Away\n" +
+                    "insert Linkin Park<SEP>Numb\n" +
+                    "insert Linkin Park<SEP>Crawling\n" +
+                    "insert Linkin Park<SEP>One Step Closer\n" +
+                    "insert Linkin Park<SEP>In The End\n" +
+                    "insert Linkin Park<SEP>Points of Authority\n" +
+                    "list artist Nickelback\n" + 
+                    "list artist Breaking Benjamin\n" + 
+                    "list song Numb\n" + 
+                    "list song asdf");
+
+            // free system resources
+            writer.close();
+
+            // call driver
+            SongSearch.main(args);
+
+            ps.close();
+            System.setOut(OLD);
+
+            assertEquals(2901, baos.toString().length());
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        } // end catch
+        
+    }
+    
+    /**
      * Tests that our program must be called correctly.
      */
     public void testInvocation() {

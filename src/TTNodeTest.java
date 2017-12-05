@@ -55,9 +55,13 @@ public class TTNodeTest extends TestCase {
      */
     public void testToString() {
         assertEquals("15 25", root.toString());
-        assertEquals("null null", new TTNode<Integer>().toString());
+        TTNode<Integer> empty = new TTNode<Integer>();
+        assertEquals("null null", empty.toString());
     }
     
+    /**
+     * Specifically aims at testing the rebalancing of the tree
+     */
     public void testRemove() {
         root = root.insertHelp(20);
         root = root.insertHelp(30);
@@ -66,5 +70,4 @@ public class TTNodeTest extends TestCase {
 
         assertEquals(30, (int) root.removeHelper(30));
     }
-    
 }

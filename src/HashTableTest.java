@@ -195,6 +195,8 @@ public class HashTableTest extends TestCase {
 
         // test removing an element not in table
         assertNull(table.delete(nickelback));
+        assertNull(table.delete(nickelback));
+        assertNull(table.delete(howYouRemindMe));
     }
 
     /**

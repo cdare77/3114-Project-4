@@ -177,15 +177,18 @@ public class HandleTest extends TestCase {
      */
     public void testEquals() {
         Handle nullHandle = null;
-        assertNotEquals(nullHandle, animals);
+        assertNotEquals(animals, nullHandle);
 
         Integer notHandle = 1;
-        assertNotEquals(notHandle, animals);
+        assertNotEquals(animals, notHandle);
 
         Handle animalsCopy = new Handle(memory, 62, 7);
-        assertEquals(animalsCopy, animals);
+        assertEquals(animals, animalsCopy);
 
-        assertNotEquals(howYouRemindMe, animals);
+        Handle animalsUnequal = new Handle(memory, 63, 8);
+        assertNotEquals(animals, animalsUnequal);
+        
+        assertNotEquals(animals, howYouRemindMe);
     }
 
     /**
